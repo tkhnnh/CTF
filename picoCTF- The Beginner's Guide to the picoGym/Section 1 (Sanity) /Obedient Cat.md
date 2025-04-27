@@ -38,6 +38,9 @@ I can easily notice that the flag has been downloaded to the machine under the n
 
 Therefore, the only thing I need to do now is using the ***hint#3***. I use `cat` command to get the `flag`.
 
+<img width="582" alt="Image" src="https://github.com/user-attachments/assets/e15a3950-acbe-4c78-b43f-a3a8d739bbd6" />
+
 ## References
 <a name="references"></a>
-
+- [cat](https://www.man7.org/linux/man-pages/man1/cat.1.html)
+- [wget](https://www.man7.org/linux/man-pages/man1/wget.1.html)

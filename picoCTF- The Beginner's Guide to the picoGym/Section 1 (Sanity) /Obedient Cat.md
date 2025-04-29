@@ -1,4 +1,4 @@
-#Obedient Cat
+# Obedient Cat
 - [Challenge Information](#challenge-information)
 - [Solution](#solution)
 - [References](#references)

@@ -1,7 +1,6 @@
 # TryHackMe - Brains
 - [Challenge Information](#challenge-information)
 - [Solution](#solution)
-- [References](#references)
 
 ## Challenge Information
 <a name="challenge-information"></a>
@@ -19,7 +18,7 @@ Description: The city forgot to close its gate.
 <a name="solution"></a>
 
 - [Task 1: Red: Exploit the server!](#t1)
-- [Task 2: Blue: Let's investigate!](#t2)
+
 
 ### Task 1: Red: Exploit the server!
 <a name="t1"></a>
@@ -112,8 +111,3 @@ THM{faa9bac345709b6620a6200b484c7594}
 ```
 # DONE!!!! :partying_face:
 
-### Task 2: Blue: Let's investigate!
-<a name="t2"></a>
-
-## References
-<a name="references"></a>

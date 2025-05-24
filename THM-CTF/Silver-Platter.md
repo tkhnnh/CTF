@@ -14,7 +14,7 @@ Enumerating information from the target by using `nmap`
 nmap -T4 -sV -O -A -v 10.10.9.219 -oN nmap.txt
 ```
 It is noticable that open ports are `22`, `80` ,`8080`.
-Accessing the target website via port `80`, it is obvious to garsp the `username : scr1ptkiddy` and a page call `silverpeas` in the contact section
+Accessing the target website via port `80`, it is obvious to gather the `username : scr1ptkiddy` and some information aobut a page call `silverpeas` in the contact section
 The process of enumerating paths of the target with to ports `80` and `8080` was executed by `gobuster`
 ```
 gobuster dir -u "http://10.10.9.219" -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x .php,.js,.txt -t 100
@@ -31,4 +31,5 @@ gobuster dir -u "http://10.10.9.219:8080" -w /usr/share/wordlists/dirbuster/dire
 `/console`
 `/website`
 Manually brute-forcing path `silverpeas` to 2 ports and port `8080` did respond and redirect to a login page.
+
 

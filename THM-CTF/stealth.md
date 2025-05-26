@@ -83,3 +83,9 @@ I had bad request for this port
 I tried another one port `8000`
 ![Image](https://github.com/user-attachments/assets/e9c4dd3d-faab-4308-b802-cea52d97b793)
 It was not found therefore this port might still have something
+
+
+
+# References
+- [reverse powershell](https://github.com/PowerShellMafia/PowerSploit/blob/master/Privesc/PowerUp.ps1)
+- [Methodology](https://www.youtube.com/watch?v=SSQaXHWZ0XM)

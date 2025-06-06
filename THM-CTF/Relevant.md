@@ -123,3 +123,15 @@ First, trigger the payload by accessing to it via port 49663
 Got the user flag
 ![Image](https://github.com/user-attachments/assets/6986c040-aeed-49fa-b23b-9215dc342966)
 
+
+# Privilege Escalation
+![Image](https://github.com/user-attachments/assets/17aa4f77-1067-4dc2-96e6-2cddeae78202)
+![Image](https://github.com/user-attachments/assets/06ec56ba-9cf0-4720-bb3d-24676ae90ad8)
+![Image](https://github.com/user-attachments/assets/9f2dd19c-c44d-44fd-8d67-b41d2d5343b4)
+![Image](https://github.com/user-attachments/assets/26538962-efe9-47c6-aebf-b946de391a86)
+
+
+# Reference
+[PrintSpoofer](https://github.com/dievus/printspoofer)
+
+

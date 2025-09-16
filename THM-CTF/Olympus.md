@@ -289,5 +289,7 @@ Remember the table that I found earlier using sqlmap
 Let's dig more into the chat table
 ```
 sqlmap -r request.txt -D olymnpus -T chats --columns
+
+```
 # Reference
 [SQLmap](https://www.vaadata.com/blog/sqlmap-the-tool-for-detecting-and-exploiting-sql-injections/#listing-the-table-names)

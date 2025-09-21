@@ -26,6 +26,11 @@ Then using `nano` to craft the payload. Imporatnt~~~!!! The extension should be 
 
 Then I just need to upload the payload. Accessing the file to trigger the payload in the `/uploads/*.png.php`
 
+Important!!!! In order to view the payload I want to upload swtich this box to all
+<img width="1378" height="968" alt="Screenshot_2025-09-21_16-40-43" src="https://github.com/user-attachments/assets/8f275391-433b-4d92-aecc-161304211199" />
+<img width="1377" height="962" alt="Screenshot_2025-09-21_16-42-17" src="https://github.com/user-attachments/assets/2bb16801-81ef-414f-a476-4d0930c80572" />
+
+
 <img width="1133" height="375" alt="Screenshot_2025-09-21_16-16-44" src="https://github.com/user-attachments/assets/2fb8b2ab-4fcc-4141-8fdd-99c1ce03ef2a" />
 And using the follow command to find the flag since the flag extension is followed by `.txt`
 ```

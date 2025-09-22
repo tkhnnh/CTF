@@ -16,3 +16,9 @@ and it worked. Let's breakdown the concept. So if I enter the username and passw
 SQL query: SELECT id FROM users WHERE password = '' AND username = ''
 ```
 The password is placed first, so the payload to break this is to close the input using `'` and add 1==1 which is always true, then how to deal with variable `username` using comment to ignore it then complete the payload.
+I got in but where is the flag? Am I supposed to mess with search bar
+<img width="1090" height="728" alt="Screenshot_2025-09-22_21-46-41" src="https://github.com/user-attachments/assets/57a18442-abd2-47c5-90bc-38d7b13f22b2" />
+
+So I have to use BurpSuite to check whether I made a mistake somehow but I got the flag. I realised after I successfully login into the site, it redirects me to the search box section without my awareness
+<img width="1260" height="683" alt="Screenshot_2025-09-22_21-53-06" src="https://github.com/user-attachments/assets/1b016db5-201c-4d2d-8dc3-13ee3bf8ef2d" />
+Happy hacking!!!!

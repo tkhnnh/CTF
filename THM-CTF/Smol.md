@@ -105,10 +105,11 @@ gobuster dir -u 'http://www.smol.thm/' -w /usr/share/wordlists/dirbuster/directo
 /server-status        (Status: 403) [Size: 277]
 ```
 That is what `gobuster` can help me at the moment.
+While accessing the folder `wp-admin`, a login portal just appeared and I attempted to enter with default credential `admin:password`
+![Screenshot_2025-09-27_16_35_00](https://github.com/user-attachments/assets/a0a9424e-901e-43e8-afa9-00cf49bdaa36)
 
 
-
-
+So I think that I need bruteforce to find the password because I already got the username. Waiting for the long time but I did not get any useful results which means I can't just easily break it
 
 
 

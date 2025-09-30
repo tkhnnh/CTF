@@ -224,3 +224,13 @@ I reckon that the third value in each list is the password for each user. So I n
 
 ```
 john --wordlist=<WORDLIST PATH> <HASHED FILE>
+```
+<img width="879" height="213" alt="Screenshot_2025-09-30_22-39-05" src="https://github.com/user-attachments/assets/58ea7f34-1779-4943-b607-3ce1702efe41" />
+<img width="834" height="192" alt="Screenshot_2025-09-30_22-32-03" src="https://github.com/user-attachments/assets/6563bd13-a953-4b47-ae24-d8bde215d5b9" />
+
+Both `gege` and `diego` are crackable, I coudn't crack `think` and ` xavi`
+```
+gege: hero_gege@hotmail.com
+diego: sandiegocalifornia
+```
+

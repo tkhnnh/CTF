@@ -117,4 +117,21 @@ gobuster dir -u 'http://storage.cloudsite.thm/api/' -w /usr/share/wordlists/dirb
 /DOCS                 (Status: 403) [Size: 27]
 ...
 ```
+
 I cannot normally reach to the endpoints, so I decide to use curl to view them on the terminal
+<img width="1256" height="398" alt="Screenshot_2025-10-04_23-38-05" src="https://github.com/user-attachments/assets/444cdad7-852b-4459-aa63-f777fae9f51d" />
+<img width="690" height="457" alt="Screenshot_2025-10-04_23-38-24" src="https://github.com/user-attachments/assets/7852e68f-787d-4f2e-a7be-7439a8dc2725" />
+
+So, I just need to activate my subscription while registering, where it creates account.
+<img width="1257" height="436" alt="Screenshot_2025-10-05_00-04-05" src="https://github.com/user-attachments/assets/0800687b-1a55-4177-82be-33aa86733cff" />
+
+Successfully getting in and the site now becomes an upload page
+<img width="684" height="593" alt="Screenshot_2025-10-05_00-05-28" src="https://github.com/user-attachments/assets/c163f018-e313-45f4-8f21-2950d875bdee" />
+
+Crafting a reverse shell and upload it to the page. (I use phpMonkeya on reveshell.com)
+<img width="496" height="642" alt="Screenshot_2025-10-05_00-13-27" src="https://github.com/user-attachments/assets/9cc30bec-7125-40b8-80d8-82ec5659124f" />
+
+Setting up a listener
+```
+nc -lnvp 9001
+```

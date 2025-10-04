@@ -69,3 +69,52 @@ assets                  [Status: 200, Size: 2487, Words: 162, Lines: 25, Duratio
 javascript              [Status: 403, Size: 278, Words: 20, Lines: 10, Duration: 332ms]
 
 ```
+
+Digging further on `/assets`
+```
+ffuf -c -r -u 'http://cloudsite.thm/assets/FUZZ' -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+...
+images                  [Status: 200, Size: 3171, Words: 173, Lines: 28, Duration: 338ms]
+plugins                 [Status: 200, Size: 1175, Words: 76, Lines: 18, Duration: 337ms]
+css                     [Status: 200, Size: 2611, Words: 140, Lines: 25, Duration: 335ms]
+font                    [Status: 200, Size: 1166, Words: 73, Lines: 18, Duration: 337ms]
+fonts                   [Status: 200, Size: 5175, Words: 289, Lines: 36, Duration: 341ms]
+js                      [Status: 200, Size: 2403, Words: 131, Lines: 24, Duration: 335ms]
+...
+```
+
+I am kinda stuck since there are not any useful information, even conducting a scan for session with `enum4linux` respond with nothing. There would be more ports which are uncommon, I got port 25672 while I was scanning and the nmap just cancelled due to time out
+```
+nmap -T5 -p25672 -A  -vv 10.201.15.144
+...
+PORT      STATE SERVICE REASON         VERSION
+25672/tcp open  unknown syn-ack ttl 61
+...
+```
+
+Carefully pay attention to the page source, I find another domain name of this server
+<img width="1109" height="28" alt="Screenshot_2025-10-04_15-44-02" src="https://github.com/user-attachments/assets/7bf707ee-9544-4772-ba71-58796787ce76" />
+<img width="620" height="746" alt="Screenshot_2025-10-04_15-50-04" src="https://github.com/user-attachments/assets/0bbff6ac-3cdc-4ed9-8aee-9a8646164d0d" />
+
+I created a fake account to get in and came across this warning sign
+<img width="1920" height="807" alt="Screenshot_2025-10-04_15-49-43" src="https://github.com/user-attachments/assets/dc6ab8d0-adf3-42c2-8bef-cc98f3b77fd5" />
+
+That tells me that I need to tamper with the request to activate my subscription
+<img width="1259" height="678" alt="Screenshot_2025-10-04_15-55-46" src="https://github.com/user-attachments/assets/09b69342-4f3e-44f5-85c2-d9c27e237460" />
+
+Now, a new endpoint `api`, I need to find the rest endpoints
+```
+gobuster dir -u 'http://storage.cloudsite.thm/api/' -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 64
+...
+/register             (Status: 405) [Size: 36]
+/login                (Status: 405) [Size: 36]
+/docs                 (Status: 403) [Size: 27]
+/uploads              (Status: 401) [Size: 32]
+/Login                (Status: 405) [Size: 36]
+/Docs                 (Status: 403) [Size: 27]
+/Register             (Status: 405) [Size: 36]
+/Uploads              (Status: 401) [Size: 32]
+/DOCS                 (Status: 403) [Size: 27]
+...
+```
+I cannot normally reach to the endpoints, so I decide to use curl to view them on the terminal

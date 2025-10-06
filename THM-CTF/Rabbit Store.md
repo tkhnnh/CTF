@@ -135,3 +135,7 @@ Setting up a listener
 ```
 nc -lnvp 9001
 ```
+No matter how hard I tried, I couldn't establish a connection. However, I found the SSRF vunerability, I attempted to upload the document inside the endpoint `/api/docs/`
+<img width="1581" height="332" alt="Screenshot_2025-10-06_15-18-16" src="https://github.com/user-attachments/assets/f63cb205-7beb-4dc7-8393-c0d7303beb4c" />
+
+After all, I could not view the content as I assumed that I should use the internal ip 

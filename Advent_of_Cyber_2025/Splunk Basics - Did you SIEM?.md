@@ -92,7 +92,23 @@ sourcetype=firewall_logs src_ip="10.10.1.5" AND dest_ip="<REDACTED>" AND action=
 
 
 ### What is the attacker IP found attacking and compromising the web server?
+<img width="884" height="519" alt="Screenshot_2025-12-04_20-28-05" src="https://github.com/user-attachments/assets/89a89b20-2536-4c2a-aff5-dd2825ae0190" />
+198.51.100.55
+
 ### Which day was the peak traffic in the logs?
+<img width="1918" height="878" alt="Screenshot_2025-12-04_20-29-49" src="https://github.com/user-attachments/assets/fb70245c-b3e0-4d8a-9297-c8f66ddb240a" />
+2025-12-10
+
 ### What is the count of Havij user_agent events found in the logs?
+<img width="886" height="745" alt="Screenshot_2025-12-04_20-27-39" src="https://github.com/user-attachments/assets/40cb6217-b934-426d-8857-2653b974ca07" />
+993
+
 ### How many path traversal attempts to access sensitive files on the server were observed?
+<img width="1920" height="963" alt="Screenshot_2025-12-04_20-34-06" src="https://github.com/user-attachments/assets/0dc10640-a21f-4ec6-8a13-6131ffdc66f2" />
+658
+
 ### Examine the firewall logs. How many bytes were transferred to the C2 server IP from the compromised web server?
+<img width="1920" height="312" alt="Screenshot_2025-12-04_20-36-08" src="https://github.com/user-attachments/assets/9e232d23-a80e-41ed-833e-30c371463594" />
+126167
+
+Happy hacking!!!

@@ -59,5 +59,23 @@ W�cF���[Q
 bandit5@bandit:~/inhere$ find ./../ -type f -size 1033c 
 ./../inhere/maybehere07/.file2
 bandit5@bandit:~/inhere$ cat ./maybehere07/.file2
-HWasnPhtq9AVKe0dmk45nxy20cvUa6EG                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     bandit5@bandit:~/inhere$ 
+HWasnPhtq9AVKe0dmk45nxy20cvUa6EG
+```
+# Level 6 -> 7
+```
+bandit6@bandit:~$ find / -type f -size 33c -user bandit7 -group bandit6 2>/dev/null
+/var/lib/dpkg/info/bandit7.password
+bandit6@bandit:~$ cat /var/lib/dpkg/info/bandit7.password
+morbNTDkSW6jIlUc0ymOdMaLnOlFVAaj
+```
+
+# Level 7 -> 8
+```
+bandit7@bandit:~$ cat data.txt | grep "millionth"
+millionth       dfwvzFQi4mU0wfNbFOe9RoWskMLg7eEc
+```
+
+# Level 8 -> 9
+```
+
 ```

@@ -51,4 +51,13 @@ GPU cracking is loud
 - High, steady GPU utilisation and power draw while the fan cruve spikes
 - Libraries loaded: `nvcuda.dll`, `OpenCL.dll`, `libcuda.so`, `amdocl64.dll`
 
+What is the flag inside the encrypted PDF?
+`THM{Cr4ck1ng_PDFs_1s_34$y}`
+
+<img width="1222" height="523" alt="Screenshot_2025-12-10_14-40-57" src="https://github.com/user-attachments/assets/5a66bca6-96ac-40fd-b340-ce6494f9fae6" />
+
+What is the flag inside the encrypted zip file?
+`THM{Cr4ck1n6_z1p$_1s_34$yyyy}`
+<img width="800" height="337" alt="Screenshot_2025-12-10_14-44-19" src="https://github.com/user-attachments/assets/356a88dd-a7dc-4cef-bd24-82ec3a62716a" />
+
 

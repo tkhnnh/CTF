@@ -77,5 +77,35 @@ millionth       dfwvzFQi4mU0wfNbFOe9RoWskMLg7eEc
 
 # Level 8 -> 9
 ```
+bandit8@bandit:~$ sort  data.txt | uniq -u
+4CKMh1JI91bUIZZPXDqGanal4xvAg0JM
 
 ```
+
+# Level 9 -> 10
+```
+strings data.txt
+--snip--
+========== FGUW5ilLVJrxX9kMYMmlN4MgbpfMiqey
+```
+
+# Level 10 -> 11
+```
+bandit10@bandit:~$ cat data.txt | base64 -d
+The password is dtR173fZKb0RRsDFSGsg2RWnpNVj3qRr
+```
+
+# Level 11 -> 12
+```
+bandit11@bandit:~$ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+The password is 7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4
+```
+
+# Level 12 -> 13
+```
+
+```
+
+# Level 13 -> 14
+```
+

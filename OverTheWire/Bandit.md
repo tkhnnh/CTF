@@ -102,10 +102,87 @@ The password is 7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4
 ```
 
 # Level 12 -> 13
+first revert the hexdump
 ```
+bandit12@bandit:/tmp/fake$ mv data.txt hexdump_data
+bandit12@bandit:/tmp/fake$ xxd -r hexdump_data compressed_data
+bandit12@bandit:/tmp/fake$ file compressed_data
+compressed_data: gzip compressed data, was "data2.bin", last modified: Tue Oct 14 09:26:00 2025, max compression, from Unix, original size modulo 2^32 572
 
 ```
+Tackling the repeatedly compressed file
+```
+bandit12@bandit:/tmp/fake$ mv compressed_data data.gz
+bandit12@bandit:/tmp/fake$ gzip -d data.gz
+bandit12@bandit:/tmp/fake$ file data
+data: bzip2 compressed data, block size = 900k
+bandit12@bandit:/tmp/fake$ mv data data.bz2
+bandit12@bandit:/tmp/fake$ bzip2 -d data.bz2
+bandit12@bandit:/tmp/fake$ file data
+data: gzip compressed data, was "data4.bin", last modified: Tue Oct 14 09:26:00 2025, max compression, from Unix, original size modulo 2^32 20480
+bandit12@bandit:/tmp/fake$ mv data data.gz
+bandit12@bandit:/tmp/fake$ gzip -d data.gz
+bandit12@bandit:/tmp/fake$ file data
+data: POSIX tar archive (GNU)
+bandit12@bandit:/tmp/fake$ mv data data.tar
+bandit12@bandit:/tmp/fake$ tar -xf data.tar
+```
+Now I got `data5.bin`
+```
+bandit12@bandit:/tmp/fake$  mv data5.bin data5.bin.tar
+bandit12@bandit:/tmp/fake$ tar -xf data5.bin.tar
+bandit12@bandit:/tmp/fake$ ll
+total 476
+drwxrwxr-x    2 bandit12 bandit12   4096 Dec 11 12:55 ./
+drwxrwx-wt 1816 root     root     438272 Dec 11 12:56 ../
+-rw-r--r--    1 bandit12 bandit12  10240 Oct 14 09:26 data5.bin.tar
+-rw-r--r--    1 bandit12 bandit12    219 Oct 14 09:26 data6.bin
+-rw-rw-r--    1 bandit12 bandit12  20480 Dec 11 12:42 data.tar
+-rw-r-----    1 bandit12 bandit12   2581 Dec 11 12:33 hexdump_data
+bandit12@bandit:/tmp/fake$ file data6.bin
+data6.bin: bzip2 compressed data, block size = 900k
+bandit12@bandit:/tmp/fake$ mv data6.bin data6.bin.bz2
+bandit12@bandit:/tmp/fake$ bzip2 -d data6.bin.bz2
+bandit12@bandit:/tmp/fake$ ll
+total 484
+drwxrwxr-x    2 bandit12 bandit12   4096 Dec 11 12:56 ./
+drwxrwx-wt 1816 root     root     438272 Dec 11 12:56 ../
+-rw-r--r--    1 bandit12 bandit12  10240 Oct 14 09:26 data5.bin.tar
+-rw-r--r--    1 bandit12 bandit12  10240 Oct 14 09:26 data6.bin
+-rw-rw-r--    1 bandit12 bandit12  20480 Dec 11 12:42 data.tar
+-rw-r-----    1 bandit12 bandit12   2581 Dec 11 12:33 hexdump_data
+bandit12@bandit:/tmp/fake$ file data6.bin
+data6.bin: POSIX tar archive (GNU)
+bandit12@bandit:/tmp/fake$ mv data6.bin data6.bin.tar
+bandit12@bandit:/tmp/fake$ tar -xf data6.bin.tar
+bandit12@bandit:/tmp/fake$ ll
+total 488
+drwxrwxr-x    2 bandit12 bandit12   4096 Dec 11 12:57 ./
+drwxrwx-wt 1817 root     root     438272 Dec 11 12:57 ../
+-rw-r--r--    1 bandit12 bandit12  10240 Oct 14 09:26 data5.bin.tar
+-rw-r--r--    1 bandit12 bandit12  10240 Oct 14 09:26 data6.bin.tar
+-rw-r--r--    1 bandit12 bandit12     79 Oct 14 09:26 data8.bin
+-rw-rw-r--    1 bandit12 bandit12  20480 Dec 11 12:42 data.tar
+-rw-r-----    1 bandit12 bandit12   2581 Dec 11 12:33 hexdump_data
+bandit12@bandit:/tmp/fake$ file data8.bin
+data8.bin: gzip compressed data, was "data9.bin", last modified: Tue Oct 14 09:26:00 2025, max compression, from Unix, original size modulo 2^32 49
+bandit12@bandit:/tmp/fake$ mv data8.bin data.gz
+bandit12@bandit:/tmp/fake$ gzip -d data.gz
+bandit12@bandit:/tmp/fake$ ll
+total 488
+drwxrwxr-x    2 bandit12 bandit12   4096 Dec 11 12:59 ./
+drwxrwx-wt 1818 root     root     438272 Dec 11 12:59 ../
+-rw-r--r--    1 bandit12 bandit12     49 Oct 14 09:26 data
+-rw-r--r--    1 bandit12 bandit12  10240 Oct 14 09:26 data5.bin.tar
+-rw-r--r--    1 bandit12 bandit12  10240 Oct 14 09:26 data6.bin.tar
+-rw-rw-r--    1 bandit12 bandit12  20480 Dec 11 12:42 data.tar
+-rw-r-----    1 bandit12 bandit12   2581 Dec 11 12:33 hexdump_data
+bandit12@bandit:/tmp/fake$ file data
+data: ASCII text
+bandit12@bandit:/tmp/fake$ cat data
+The password is FO5dwFsc0cbaIiH0h8J2eUks2vdTDwAn
 
+```
 # Level 13 -> 14
 ```
 

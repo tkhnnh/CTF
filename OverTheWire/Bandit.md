@@ -186,3 +186,34 @@ The password is FO5dwFsc0cbaIiH0h8J2eUks2vdTDwAn
 # Level 13 -> 14
 ```
 
+bandit13@bandit:~$ ll
+total 24
+drwxr-xr-x   2 root     root     4096 Oct 14 09:26 ./
+drwxr-xr-x 150 root     root     4096 Oct 14 09:29 ../
+-rw-r--r--   1 root     root      220 Mar 31  2024 .bash_logout
+-rw-r--r--   1 root     root     3851 Oct 14 09:19 .bashrc
+-rw-r--r--   1 root     root      807 Mar 31  2024 .profile
+-rw-r-----   1 bandit14 bandit13 1679 Oct 14 09:26 sshkey.private
+bandit13@bandit:~$ exit
+logout
+Connection to bandit.labs.overthewire.org closed.
+
+
+scp -P 2220 bandit13@bandit.labs.overthewire.org:sshkey.private .
+backend: gibson-0
+bandit13@bandit.labs.overthewire.org's password: 
+Permission denied, please try again.
+bandit13@bandit.labs.overthewire.org's password: 
+Permission denied, please try again.
+bandit13@bandit.labs.overthewire.org's password: 
+sshkey.private
+
+```
+After getting the key, I must change the permission in order to use the key to `700`
+```
+ssh -i sshkey.private bandit14@bandit.labs.overthewire.org -p 2220
+```
+
+# Level 14 -> 15
+
+# Level 15 -> 16

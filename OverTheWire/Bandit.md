@@ -698,8 +698,20 @@ Some notes for bandit30 of bandit.
 
 ```
 # Level 30 -> 31
+Git tagging is a way to mark specific points in the history of the repository. One example would be to mark release points of the software. The command to see the tags is git tag. To create a tag the command is git tag -a <tag_name> -m <"tag description/message">. To see more details, like the tag message and commit, you can use the following command: git show <tag_name>.
+
+```
+┌──(bmo㉿Bmo)-[~/repo]
+└─$ git tag
+secret
+                                                                                                                                                                                                                                           
+┌──(bmo㉿Bmo)-[~/repo]
+└─$ git show secret                                  
+fb5S2xb7bRyFmAvQYQGEqsbhVyJqhnDy
+```
 
 
 # Level 31 -> 32
 
-# Level 32 ->
+
+# Level 32 -> 33

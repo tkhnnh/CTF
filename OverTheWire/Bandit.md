@@ -522,9 +522,184 @@ cat poss.txt | nc localhost 30002 > result.txt
 ```
 
 # Level 25 -> 26
-get the key first
+
+get the key first by connecting to bandit25 then usinng `scp`
+
+```
+scp -P 2220 bandit25@bandit.labs.overthewire.org:bandit26.sshkey .
+```
+now , we have the key to get in bandit 26
 ```
 ssh bandit26@bandit.labs.overthewire.org -p 2220 -i bandit26.sshkey
 ```
+However, I got instant timeout and got kicked out immediately whenever I attempted to connect to that
+<img width="598" height="235" alt="Screenshot_2026-01-06_19-24-39" src="https://github.com/user-attachments/assets/88a86c17-0e7c-4e0d-b27f-a486d82b2cf3" />
+
+Let's utilise `/etc/passwd/` to find more info about the bandit26 shell interpreter
+```
+bandit25@bandit:~$ cat /etc/passwd | grep bandit26
+bandit26:x:11026:11026:bandit level 26:/home/bandit26:/usr/bin/showtext
+bandit25@bandit:~$ cat /usr/bin/showtext
+#!/bin/sh
+
+export TERM=linux
+
+exec more ~/text.txt
+exit 0
+```
+So I know that when never I connect to bandit26, the terminal will execute `more` command and display the ascii text, so my goal is to use the subshell inside the text editor to change the shell into `/bin/bash`.
+
+In order to achive that I have to minimize the terminal window as small as possible to break the `more` command when displaying the ascii text
+<img width="307" height="190" alt="Screenshot_2026-01-06_19-33-38" src="https://github.com/user-attachments/assets/6e4b2af5-dfde-4804-affa-2f45a207e458" />
+
+Now, press V to enter vim mode
+then
+```
+:set shell=/bin/bash
+:shell #execute the shell
+```
+# Level 26 -> 27
+```
+bandit26@bandit:~$ ./bandit27-do cat /etc/bandit\_pass/bandit27                                                                                                                                                                             
+upsNCc7vzaRDx6oZC6GiR6ERwe1MowGB
+```
+
+# Level 27 -> 28
 
 
+
+```
+┌──(bmo㉿Bmo)-[~]
+└─$ git clone  ssh://bandit27-git@bandit.labs.overthewire.org:2220/home/bandit27-git/repo
+Cloning into 'repo'...
+                         _                     _ _ _   
+                        | |__   __ _ _ __   __| (_) |_ 
+                        | '_ \ / _` | '_ \ / _` | | __|
+                        | |_) | (_| | | | | (_| | | |_ 
+                        |_.__/ \__,_|_| |_|\__,_|_|\__|
+                                                       
+
+                      This is an OverTheWire game server. 
+            More information on http://www.overthewire.org/wargames
+
+backend: gibson-0
+bandit27-git@bandit.labs.overthewire.org's password: 
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+Receiving objects: 100% (3/3), done.
+
+┌──(bmo㉿Bmo)-[~/repo]
+└─$ cat README         
+The password to the next level is: Yz9IpL0sBcCeuG7m9uQFt8ZNpS4HZRcN
+
+```
+
+# Level 28 -> 29
+```
+┌──(bmo㉿Bmo)-[~]
+└─$ git clone  ssh://bandit28-git@bandit.labs.overthewire.org:2220/home/bandit28-git/repo
+Cloning into 'repo'...
+                         _                     _ _ _   
+                        | |__   __ _ _ __   __| (_) |_ 
+                        | '_ \ / _` | '_ \ / _` | | __|
+                        | |_) | (_| | | | | (_| | | |_ 
+                        |_.__/ \__,_|_| |_|\__,_|_|\__|
+                                                       
+
+                      This is an OverTheWire game server. 
+            More information on http://www.overthewire.org/wargames
+
+backend: gibson-0
+bandit28-git@bandit.labs.overthewire.org's password: 
+remote: Enumerating objects: 9, done.
+remote: Counting objects: 100% (9/9), done.
+remote: Compressing objects: 100% (6/6), done.
+remote: Total 9 (delta 2), reused 0 (delta 0), pack-reused 0
+Receiving objects: 100% (9/9), done.
+Resolving deltas: 100% (2/2), done
+
+┌──(bmo㉿Bmo)-[~/repo]
+└─$ ll
+total 4
+-rw-rw-r-- 1 bmo bmo 111 Jan  6 19:56 README.md
+                                                                                                                    
+┌──(bmo㉿Bmo)-[~/repo]
+└─$ cat README.md
+# Bandit Notes
+Some notes for level29 of bandit.
+
+## credentials
+
+- username: bandit29
+- password: xxxxxxxxxx
+
+```
+The password has been obfuscated so check the log to see something fun
+```
+┌──(bmo㉿Bmo)-[~/repo]
+└─$ git log                                                                              
+commit b0354c7be30f500854c5fc971c57e9cbe632fef6 (HEAD -> master, origin/master, origin/HEAD)
+Author: Morla Porla <morla@overthewire.org>
+Date:   Tue Oct 14 09:26:19 2025 +0000
+
+    fix info leak
+
+commit d0cf2ab7dd7ebc6075b59102a980155268f0fe8f
+Author: Morla Porla <morla@overthewire.org>
+Date:   Tue Oct 14 09:26:19 2025 +0000
+
+    add missing data
+
+commit bd6bc3a57f81518bb2ce63f5816607a754ba730d
+Author: Ben Dover <noone@overthewire.org>
+Date:   Tue Oct 14 09:26:18 2025 +0000
+
+    initial commit of README.md
+                                                                                                                    
+┌──(bmo㉿Bmo)-[~/repo]
+└─$ git show b0354c7be30f500854c5fc971c57e9cbe632fef6
+commit b0354c7be30f500854c5fc971c57e9cbe632fef6 (HEAD -> master, origin/master, origin/HEAD)
+Author: Morla Porla <morla@overthewire.org>
+Date:   Tue Oct 14 09:26:19 2025 +0000
+
+    fix info leak
+
+diff --git a/README.md b/README.md
+index d4e3b74..5c6457b 100644
+--- a/README.md
++++ b/README.md
+@@ -4,5 +4,5 @@ Some notes for level29 of bandit.
+ ## credentials
+ 
+ - username: bandit29
+-- password: 4pT1t5DENaYuqnqvadYs1oE4QLCdjmJ7
++- password: xxxxxxxxxx
+```
+I attempted to view the commit fix into leak and hurray I found the password for bandit 29 
+
+# Level 29 -> 30
+```
+┌──(bmo㉿Bmo)-[~/repo]
+└─$ git checkout dev                                 
+branch 'dev' set up to track 'origin/dev'.
+Switched to a new branch 'dev'
+                                                                                                                    
+┌──(bmo㉿Bmo)-[~/repo]
+└─$ cat README.md   
+# Bandit Notes
+Some notes for bandit30 of bandit.
+
+## credentials
+
+- username: bandit30
+- password: qp30ex3VLz5MDG1n91YowTv4Q8l7CDZL
+
+```
+# Level 30 -> 31
+
+
+# Level 31 -> 32
+
+# Level 32 ->

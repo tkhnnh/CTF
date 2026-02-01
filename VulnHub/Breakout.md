@@ -60,3 +60,81 @@ Moving to port `10000`
 
 The link leads me to this site which emphasizes the serivec `https` and that is a loging portal for webmin
 <img width="1920" height="643" alt="Screenshot_2025-09-22_00-02-53" src="https://github.com/user-attachments/assets/ba902b9a-9883-4fd6-998b-461e780fcb85" />
+
+Performing a `NSE-script scan with nmap`
+Command : `nmap <ip> --script vuln` 
+```
+PORT      STATE SERVICE
+80/tcp    open  http
+|_http-dombased-xss: Couldn't find any DOM based XSS.
+|_http-stored-xss: Couldn't find any stored XSS vulnerabilities.
+| http-csrf: 
+| Spidering limited to: maxdepth=3; maxpagecount=20; withinhost=192.168.195.130
+|   Found the following possible CSRF vulnerabilities: 
+|     
+|     Path: http://192.168.195.130:80/manual/tr/index.html
+|     Form id: 
+|     Form action: https://www.google.com/search
+|     
+|     Path: http://192.168.195.130:80/manual/zh-cn/index.html
+|     Form id: 
+|     Form action: https://www.google.com/search
+|     
+|     Path: http://192.168.195.130:80/manual/ru/index.html
+|     Form id: 
+|     Form action: https://www.google.com/search
+|     
+|     Path: http://192.168.195.130:80/manual/fr/index.html
+|     Form id: 
+|     Form action: https://www.google.com/search
+|     
+|     Path: http://192.168.195.130:80/manual/ja/index.html
+|     Form id: 
+|     Form action: https://www.google.com/search
+|     
+|     Path: http://192.168.195.130:80/manual/ko/index.html
+|     Form id: 
+|     Form action: https://www.google.com/search
+|     
+|     Path: http://192.168.195.130:80/manual/da/index.html
+|     Form id: 
+|     Form action: https://www.google.com/search
+|     
+|     Path: http://192.168.195.130:80/manual/pt-br/index.html
+|     Form id: 
+|     Form action: https://www.google.com/search
+|     
+|     Path: http://192.168.195.130:80/manual/es/index.html
+|     Form id: 
+|     Form action: https://www.google.com/search
+|     
+|     Path: http://192.168.195.130:80/manual/en/index.html
+|     Form id: 
+|     Form action: https://www.google.com/search
+|     
+|     Path: http://192.168.195.130:80/manual/de/index.html
+|     Form id: 
+|_    Form action: https://www.google.com/search
+| http-enum: 
+|_  /manual/: Potentially interesting folder
+139/tcp   open  netbios-ssn
+445/tcp   open  microsoft-ds
+10000/tcp open  snet-sensor-mgmt
+| http-vuln-cve2006-3392: 
+|   VULNERABLE:
+|   Webmin File Disclosure
+|     State: VULNERABLE (Exploitable)
+|     IDs:  CVE:CVE-2006-3392
+|       Webmin before 1.290 and Usermin before 1.220 calls the simplify_path function before decoding HTML.
+|       This allows arbitrary files to be read, without requiring authentication, using "..%01" sequences
+|       to bypass the removal of "../" directory traversal sequences.
+|       
+|     Disclosure date: 2006-06-29
+|     References:
+|       http://www.rapid7.com/db/modules/auxiliary/admin/webmin/file_disclosure
+|       https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2006-3392
+|_      http://www.exploit-db.com/exploits/1997/
+20000/tcp open  dnp
+MAC Address: 00:0C:29:F0:13:C2 (VMware)
+```
+The scan indicates that the system is vulnerable to File Disclosure vulnerability with the CVE: CVE-2006-3392

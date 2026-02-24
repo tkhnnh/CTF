@@ -1,4 +1,4 @@
-<img width="411" height="46" alt="Screenshot 2026-02-24 201025" src="https://github.com/user-attachments/assets/647c350e-8b23-4c58-9529-787bcd1568d7" /># Link
+# Link
 [Athena](https://tryhackme.com/room/4th3n4)
 
 # Reconnaisance
@@ -200,6 +200,7 @@ The function check the value of `iVar3`
 <img width="187" height="60" alt="Screenshot 2026-02-24 201823" src="https://github.com/user-attachments/assets/817dcf06-ab08-41bd-9af5-57be0f12de8e" />
 
 if the variable `iVar3` = 0x39 then I can get the root privileges escalation, from my basic understanding, if `iVar3` is equal to 0x3f,  it toggles the module's hidden status. This appears to hide or reveal the presence of the rootkit module.
+
 <img width="487" height="273" alt="Screenshot 2026-02-24 202217" src="https://github.com/user-attachments/assets/952d41b6-408c-4ff0-9085-20afd0954621" />
 
 Now, it's time to load the module

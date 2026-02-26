@@ -118,7 +118,7 @@ gobuster dir -u 'http://storage.cloudsite.thm/api/' -w /usr/share/wordlists/dirb
 ...
 ```
 
-I cannot normally reach to the endpoints, so I decide to use curl to view them on the terminal
+I cannot normally reach to the endpoints, after a moment inspecting and learning about the jwt token, I decide to decode it to check whether I can modify it or not 
 <img width="1256" height="398" alt="Screenshot_2025-10-04_23-38-05" src="https://github.com/user-attachments/assets/444cdad7-852b-4459-aa63-f777fae9f51d" />
 <img width="690" height="457" alt="Screenshot_2025-10-04_23-38-24" src="https://github.com/user-attachments/assets/7852e68f-787d-4f2e-a7be-7439a8dc2725" />
 

@@ -21,3 +21,6 @@ password:
 access granted
 nope
 ```
+
+The password is super_secret_password
+Happy Hacking

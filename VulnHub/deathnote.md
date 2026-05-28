@@ -1,4 +1,4 @@
-<img width="1500" height="640" alt="Screenshot 2026-05-28 215039" src="https://github.com/user-attachments/assets/6a6a30c4-ebdf-4474-821d-684ff854e1d6" />URL : [Deathnote](https://www.vulnhub.com/entry/deathnote-1,739/)
+URL : [Deathnote](https://www.vulnhub.com/entry/deathnote-1,739/)
 
 # Setting up
 

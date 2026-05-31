@@ -71,7 +71,7 @@ So I have to add domain name in the `hosts` file in order to access the victim H
 
 Next, I notice that the victim use Wordpress CMS, so I decided to use `wpscan` which is a tool for scanning wordpress CMS service
 ```
-spscan --url http://deathnote.vuln/wordpress/
+$ wpscan --url http://deathnote.vuln/wordpress/
 <SNIP>
 [+] Upload directory has listing enabled: http://deathnote.vuln/wordpress/wp-content/uploads/
  | Found By: Direct Access (Aggressive Detection)
@@ -174,7 +174,7 @@ But when I access the /important.jpg, it gave me nothing
 Well, in this case, I will use `nikto`   which is a tool for scanning web security in general
 
 ```
-nikto -h http://deathnote.vuln/
+$ nikto -h http://deathnote.vuln/
 <SNIP>
 + [006668] /wordpress/wp-login.php: WordPress login found.
 <SNIP>
